@@ -1,0 +1,29 @@
+{
+  "name": "ll-property-association",
+  "version": "1.0.0",
+  "authors": [
+    "Anonymous <anonymous@example.com>"
+  ],
+  "description": "UI for creating and removing relations between properties and other entities.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "property-association"
+  ],
+  "main": "ll-property-association.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/LeisureLinkElements/ll-property-association/",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  }
+}
