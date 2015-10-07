@@ -45,8 +45,8 @@ Example:
         <div class="col-sm-4"><h2>Associated Properties</h2></div>
         <div class="col-sm-8">
           <div class="pull-right">
-            <button class="btn btn-destructive hide" on-click="removeProperties">Remove Selected</button>
-            <button class="btn btn-default pull-right" on-click="goAddProperties">[[addPropsButtonText]]</button>
+            <button class="btn btn-destructive hide" on-click="_removeProperties">Remove Selected</button>
+            <button class="btn btn-default pull-right" on-click="_goAddProperties">[[addPropsButtonText]]</button>
           </div>
         </div>
       </div>
@@ -145,17 +145,24 @@ Example:
       console.log('_handleGetAssociatedUnits called with ', evt);
       if(evt && evt.detail && evt.detail.response && evt.detail.response.success === 'OK') {
         var cfg = evt.detail.response.result;
+        this.noneAssociated = true;
         if(cfg) {
           console.log('new config received:',cfg);
           this.associatedUnitsTableConfig = cfg;
           if(Array.isArray(cfg.items) && cfg.items.length) {
             this.noneAssociated = false;
-          } else {
-            this.noneAssociated = true;
           }
         }
 
       }
+    },
+
+    _goAddProperties: function() {
+
+    },
+
+    _removeProperties: function() {
+      
     }
 
   });
