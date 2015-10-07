@@ -31,7 +31,7 @@ Example:
       display: block;
       box-sizing: border-box;
     }
-    #noneAssociated a {
+    .noUnitsMessage a {
       padding-left:20px;
       font-weight:bold;
     }
@@ -40,6 +40,7 @@ Example:
   <template>
 
     <iron-ajax id="getAssociatedUnits" url="{{associatedUnitsUrl}}" handle-as="json" on-response="_handleGetAssociatedUnits"></iron-ajax>
+    <iron-ajax id="getUnassociatedUnits" url="{{unassociatedUnitsUrl}}" handle-as="json" on-response="_handleGetUnassociatedUnits"></iron-ajax>
 
     <div>
       <div class="row">
@@ -53,10 +54,20 @@ Example:
       </div>
     </div>
     <hr>
-    <template is="dom-if" if="{{!noneAssociated}}" restamp>
+
+    <template is="dom-if" if="{{!noAssociatedUnits}}" restamp>
       <ll-table fire-log-name="associated-units-table" fire-logging-enabled config="{{associatedUnitsTableConfig}}"></ll-table>
     </template>
-    <template is="dom-if" if="{{noneAssociated}}" restamp><p id="noneAssociated">No properties to display. <a href="#" on-click="goAddProperties">Add one now &gt;</a></p></template>
+    <template is="dom-if" if="{{noAssociatedUnits}}" restamp><p class="noUnitsMessage">No properties to display. <a href="#" on-click="goAddProperties">Add one now &gt;</a></p></template>
+
+    <template>
+      <paper-dialog id="associate-units-table-modal" modal entry-animation="slide-down-animation" exit-animation="slide-up-animation">
+        <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp>
+          <ll-table fire-log-name="unassociated-units-table" fire-logging-enabled config="{{unassociatedUnitsTableConfig}}"></ll-table>
+        </template>
+        <template is="dom-if" if="{{noUnassociatedUnits}}" restamp><p class="noUnitsMessage">No properties to associate.</p></template>
+      </paper-dialog>
+    </template>
   </template>
 
 </dom-module>
@@ -79,7 +90,7 @@ Example:
 
       associatedUnitsUrl: {
         type: String,
-        computed: '_getUnitsUrl(pmcId, relationSource, relationSourceId)'
+        computed: '_getUnitsUrl(pmcId, relationSource, relationSourceId, true)'
       },
 
       associatedUnitsTableConfig: {
@@ -87,14 +98,29 @@ Example:
         value: {}
       },
 
-      noneAssociated: {
+      noAssociatedUnits: {
         type: Boolean,
         value: true
       },
 
-      addPropsButtonText: {
+      unassociatedUnitsUrl: {
         type: String,
-        computed: '_getAddPropsButtonText(noneAssociated)'
+        computed: '_getUnitsUrl(pmcId, relationSource, relationSourceId, false)'
+      },
+
+      unassociatedUnitsTableConfig: {
+        type: Object,
+        value: {}
+      },
+
+      noUnassociatedUnits: {
+        type: Boolean,
+        value: true
+      },
+
+      addUnitsButtonText: {
+        type: String,
+        computed: '_getAddUnitsButtonText(noAssociatedUnits)'
       }
 
     },
@@ -128,8 +154,8 @@ Example:
 
     // Element Behavior
 
-    _getAddPropsButtonText: function(noneAssoc) {
-      return 'Associate with' + (noneAssoc ? '' : ' More') + ' Properties';
+    _getAddUnitsButtonText: function(noAssoc) {
+      return 'Associate with' + (noAssoc ? '' : ' More') + ' Properties';
     },
 
     _getUnitsUrl: function(pmcId, relationSource, relationSourceId, areAssoc) {
@@ -148,12 +174,12 @@ Example:
       this._fireLog('_handleGetAssociatedUnits called with ', evt);
       if(evt && evt.detail && evt.detail.response && evt.detail.response.success === 'OK') {
         var cfg = evt.detail.response.result;
-        this.noneAssociated = true;
+        this.noUnitsAssociated = true;
         if(cfg) {
           this._fireLog('new config received:',cfg);
           this.associatedUnitsTableConfig = cfg;
           if(Array.isArray(cfg.items) && cfg.items.length) {
-            this.noneAssociated = false;
+            this.noUnitsAssociated = false;
           }
         }
       }
