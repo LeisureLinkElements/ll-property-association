@@ -47,25 +47,25 @@ Example:
         <div class="col-sm-4"><h2>Associated Properties</h2></div>
         <div class="col-sm-8">
           <div class="pull-right">
-            <button class="btn btn-destructive hide" on-click="_removeProperties">Remove Selected</button>
-            <button class="btn btn-default pull-right" on-click="_goAddProperties">[[addPropsButtonText]]</button>
+            <button id="buttonRemoveSelected" class="btn btn-destructive hide" on-click="_removeUnits">Remove Selected</button>
+            <button class="btn btn-default pull-right" on-click="_goAddProperties">[[addUnitsButtonText]]</button>
           </div>
         </div>
       </div>
     </div>
     <hr>
 
-    <template is="dom-if" if="{{!noAssociatedUnits}}" restamp>
-      <ll-table fire-log-name="associated-units-table" fire-logging-enabled config="{{associatedUnitsTableConfig}}"></ll-table>
+    <template is="dom-if" if="{{!noAssociatedUnits}}" restamp="true">
+      <ll-table id="associatedUnitsTable" fire-log-name="Associated Units Table" fire-logging-enabled="true" fire-log-event-prefix="associated-units-table-" config="{{associatedUnitsTableConfig}}"></ll-table>
     </template>
-    <template is="dom-if" if="{{noAssociatedUnits}}" restamp><p class="noUnitsMessage">No properties to display. <a href="#" on-click="goAddProperties">Add one now &gt;</a></p></template>
+    <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to display. <a href="#" on-click="goAddProperties">Add one now &gt;</a></p></template>
 
     <template>
       <paper-dialog id="associate-units-table-modal" modal entry-animation="slide-down-animation" exit-animation="slide-up-animation">
-        <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp>
-          <ll-table fire-log-name="unassociated-units-table" fire-logging-enabled config="{{unassociatedUnitsTableConfig}}"></ll-table>
+        <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
+          <ll-table fire-log-name="Unassociated Units Table" fire-logging-enabled config="{{unassociatedUnitsTableConfig}}"></ll-table>
         </template>
-        <template is="dom-if" if="{{noUnassociatedUnits}}" restamp><p class="noUnitsMessage">No properties to associate.</p></template>
+        <template is="dom-if" if="{{noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to associate.</p></template>
       </paper-dialog>
     </template>
   </template>
@@ -80,6 +80,10 @@ Example:
 
     behaviors: [FireLogBehavior],
 
+    listeners: {
+      'associated-units-table-selected-items-changed': '_associatedUnitsSelectionChanged'
+    },
+
     properties: {
 
       pmcId: String,
@@ -92,7 +96,9 @@ Example:
 
       associatedUnitsTableConfig: {
         type: Object,
-        value: {}
+        value: function() {
+          return {};
+        }
       },
 
       noAssociatedUnits: {
@@ -100,11 +106,20 @@ Example:
         value: true
       },
 
+      selectedAssociatedUnitIDs: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+
       unassociatedUnitsUrl: String,
 
       unassociatedUnitsTableConfig: {
         type: Object,
-        value: {}
+        value: function() {
+          return {};
+        }
       },
 
       noUnassociatedUnits: {
@@ -135,8 +150,8 @@ Example:
 
     // Element Behavior
 
-    _getAddUnitsButtonText: function(noAssoc) {
-      return 'Associate with' + (noAssoc ? '' : ' More') + ' Properties';
+    _getAddUnitsButtonText: function(noAssociatedUnits) {
+      return 'Associate with' + (noAssociatedUnits ? '' : ' More') + ' Properties';
     },
 
     _getUnitsUrl: function(areAssoc) {
@@ -144,7 +159,7 @@ Example:
     },
 
     load: function() {
-      this._fireLog('load called');
+      this._fireLog('Load called');
       this.associatedUnitsUrl = this._getUnitsUrl(true);
       this.unassociatedUnitsUrl = this._getUnitsUrl(false);
       this.$.getAssociatedUnits.generateRequest();
@@ -154,23 +169,30 @@ Example:
       this._fireLog('_handleGetAssociatedUnits called with ', evt);
       if(evt && evt.detail && evt.detail.response && evt.detail.response.success === 'OK') {
         var cfg = evt.detail.response.result;
-        this.noUnitsAssociated = true;
+        this.noAssociatedUnits = true;
         if(cfg) {
-          this._fireLog('new config received:',cfg);
-          this.associatedUnitsTableConfig = cfg;
+          this._fireLog('New config received:',cfg);
           if(Array.isArray(cfg.items) && cfg.items.length) {
-            this.noUnitsAssociated = false;
+            this.noAssociatedUnits = false;
           }
+          this.associatedUnitsTableConfig = cfg;
         }
       }
     },
 
-    _goAddProperties: function() {
+    _goAddUnits: function() {
 
     },
 
-    _removeProperties: function() {
+    _associatedUnitsSelectionChanged: function(evt) {
+      if(evt && Array.isArray(evt.detail)) {
+        this.selectedAssociatedUnitIDs = evt.detail;
+        this.toggleClass('hide', this.selectedAssociatedUnitIDs.length < 1, this.$.buttonRemoveSelected);
+      }
+    },
 
+    _removeUnits: function() {
+      this._fireLogFire('remove-properties', this.selectedAssociatedUnitIDs);
     }
 
   });
