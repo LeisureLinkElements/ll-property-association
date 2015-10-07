@@ -88,10 +88,7 @@ Example:
 
       relationSourceId: String,
 
-      associatedUnitsUrl: {
-        type: String,
-        computed: '_getUnitsUrl(pmcId, relationSource, relationSourceId, true)'
-      },
+      associatedUnitsUrl: String,
 
       associatedUnitsTableConfig: {
         type: Object,
@@ -103,10 +100,7 @@ Example:
         value: true
       },
 
-      unassociatedUnitsUrl: {
-        type: String,
-        computed: '_getUnitsUrl(pmcId, relationSource, relationSourceId, false)'
-      },
+      unassociatedUnitsUrl: String,
 
       unassociatedUnitsTableConfig: {
         type: Object,
@@ -128,28 +122,15 @@ Example:
     // Element Lifecycle
 
     ready: function () {
-      // `ready` is called after all elements have been configured, but
-      // propagates bottom-up. This element's children are ready, but parents
-      // are not.
-      //
-      // This is the point where you should make modifications to the DOM (when
-      // necessary), or kick off any processes the element wants to perform.
+      this._fireLog('ready');
     },
 
     attached: function () {
-      // `attached` fires once the element and its parents have been inserted
-      // into a document.
-      //
-      // This is a good place to perform any work related to your element's
-      // visual state or active behavior (measuring sizes, beginning animations,
-      // loading resources, etc).
+      this._fireLog('attached');
     },
 
     detached: function () {
-      // The analog to `attached`, `detached` fires when the element has been
-      // removed from a document.
-      //
-      // Use this to clean up anything you did in `attached`.
+      this._fireLog('detached');
     },
 
     // Element Behavior
@@ -158,15 +139,14 @@ Example:
       return 'Associate with' + (noAssoc ? '' : ' More') + ' Properties';
     },
 
-    _getUnitsUrl: function(pmcId, relationSource, relationSourceId, areAssoc) {
-      var url = '/integration-hub/accounts/' + pmcId + '/' + relationSource + '/' + relationSourceId + '/units?areAssoc=' + (areAssoc ? 'true' : 'false');
-      return url;
+    _getUnitsUrl: function(areAssoc) {
+      return '/integration-hub/accounts/' + this.pmcId + '/' + this.relationSource + '/' + this.relationSourceId + '/units?areAssoc=' + (areAssoc ? 'true' : 'false');
     },
 
-    load: function(config) {
-      this.pmcId = config.pmcId;
-      this.relationSource = config.src;
-      this.relationSourceId = config.srcId;
+    load: function() {
+      this._fireLog('load called');
+      this.associatedUnitsUrl = this._getUnitsUrl(true);
+      this.unassociatedUnitsUrl = this._getUnitsUrl(false);
       this.$.getAssociatedUnits.generateRequest();
     },
 
