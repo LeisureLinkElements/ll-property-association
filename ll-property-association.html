@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../ll-theme/ll-theme.html">
 <link rel="import" href="../ll-table/ll-table.html">
+<link rel="import" href="../ll-firelog-behavior/ll-firelog-behavior.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 
 <!--
@@ -53,7 +54,7 @@ Example:
     </div>
     <hr>
     <template is="dom-if" if="{{!noneAssociated}}" restamp>
-      <ll-table dev="true" raw-config="{{associatedUnitsTableConfig}}"></ll-table>
+      <ll-table fire-log-name="associated-units-table" fire-logging-enabled config="{{associatedUnitsTableConfig}}"></ll-table>
     </template>
     <template is="dom-if" if="{{noneAssociated}}" restamp><p id="noneAssociated">No properties to display. <a href="#" on-click="goAddProperties">Add one now &gt;</a></p></template>
   </template>
@@ -65,6 +66,8 @@ Example:
   Polymer({
 
     is: 'll-property-association',
+
+    behaviors: [FireLogBehavior],
 
     properties: {
 
@@ -142,18 +145,17 @@ Example:
     },
 
     _handleGetAssociatedUnits: function(evt) {
-      console.log('_handleGetAssociatedUnits called with ', evt);
+      this._fireLog('_handleGetAssociatedUnits called with ', evt);
       if(evt && evt.detail && evt.detail.response && evt.detail.response.success === 'OK') {
         var cfg = evt.detail.response.result;
         this.noneAssociated = true;
         if(cfg) {
-          console.log('new config received:',cfg);
+          this._fireLog('new config received:',cfg);
           this.associatedUnitsTableConfig = cfg;
           if(Array.isArray(cfg.items) && cfg.items.length) {
             this.noneAssociated = false;
           }
         }
-
       }
     },
 
@@ -162,7 +164,7 @@ Example:
     },
 
     _removeProperties: function() {
-      
+
     }
 
   });
