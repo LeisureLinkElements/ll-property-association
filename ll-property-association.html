@@ -52,10 +52,10 @@ Example:
       </div>
     </div>
     <hr>
-    <template is="dom-if" if="{{!noneAssociated}}">
-      <ll-table dev="true" rawConfig="{{associatedUnitsTableConfig}}"></ll-table>
+    <template is="dom-if" if="{{!noneAssociated}}" restamp>
+      <ll-table dev="true" raw-config="{{associatedUnitsTableConfig}}"></ll-table>
     </template>
-    <template is="dom-if" if="{{noneAssociated}}"><p id="noneAssociated">No properties to display. <a href="#" on-click="goAddProperties">Add one now &gt;</a></p></template>
+    <template is="dom-if" if="{{noneAssociated}}" restamp><p id="noneAssociated">No properties to display. <a href="#" on-click="goAddProperties">Add one now &gt;</a></p></template>
   </template>
 
 </dom-module>
@@ -131,7 +131,6 @@ Example:
 
     _getUnitsUrl: function(pmcId, relationSource, relationSourceId, areAssoc) {
       var url = '/integration-hub/accounts/' + pmcId + '/' + relationSource + '/' + relationSourceId + '/units?areAssoc=' + (areAssoc ? 'true' : 'false');
-      console.log(url);
       return url;
     },
 
@@ -146,8 +145,16 @@ Example:
       console.log('_handleGetAssociatedUnits called with ', evt);
       if(evt && evt.detail && evt.detail.response && evt.detail.response.success === 'OK') {
         var cfg = evt.detail.response.result;
-        console.log('new config received:',cfg);
-        this.associatedUnitsTableConfig = cfg;
+        if(cfg) {
+          console.log('new config received:',cfg);
+          this.associatedUnitsTableConfig = cfg;
+          if(Array.isArray(cfg.items) && cfg.items.length) {
+            this.noneAssociated = false;
+          } else {
+            this.noneAssociated = true;
+          }
+        }
+
       }
     }
 
