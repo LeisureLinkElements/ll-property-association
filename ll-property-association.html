@@ -8,6 +8,9 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../ll-theme/ll-theme.html">
+<link rel="import" href="../ll-table/ll-table.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
 
 <!--
 An element providing a solution to no problem in particular.
@@ -18,6 +21,8 @@ Example:
 
 @demo
 -->
+
+
 <dom-module id="ll-property-association">
 
   <style>
@@ -25,9 +30,33 @@ Example:
       display: block;
       box-sizing: border-box;
     }
+    #noneAssociated a {
+      padding-left:20px;
+      font-weight:bold;
+    }
   </style>
 
-  <template>ll-property-association!</template>
+  <template>
+
+    <iron-ajax id="getAssociatedUnits" url="{{associatedUnitsUrl}}" handle-as="json" on-response="_handleGetAssociatedUnits"></iron-ajax>
+
+    <div>
+      <div class="row">
+        <div class="col-sm-4"><h2>Associated Properties</h2></div>
+        <div class="col-sm-8">
+          <div class="pull-right">
+            <button class="btn btn-destructive hide" on-click="removeProperties">Remove Selected</button>
+            <button class="btn btn-default pull-right" on-click="goAddProperties">[[addPropsButtonText]]</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <template is="dom-if" if="{{!noneAssociated}}">
+      <ll-table dev="true" rawConfig="{{associatedUnitsTableConfig}}"></ll-table>
+    </template>
+    <template is="dom-if" if="{{noneAssociated}}"><p id="noneAssociated">No properties to display. <a href="#" on-click="goAddProperties">Add one now &gt;</a></p></template>
+  </template>
 
 </dom-module>
 
@@ -39,11 +68,37 @@ Example:
 
     properties: {
 
+      pmcId: String,
+
+      relationSource: String,
+
+      relationSourceId: String,
+
+      associatedUnitsUrl: {
+        type: String,
+        computed: '_getUnitsUrl(pmcId, relationSource, relationSourceId)'
+      },
+
+      associatedUnitsTableConfig: {
+        type: Object,
+        value: {}
+      },
+
+      noneAssociated: {
+        type: Boolean,
+        value: true
+      },
+
+      addPropsButtonText: {
+        type: String,
+        computed: '_getAddPropsButtonText(noneAssociated)'
+      }
+
     },
 
     // Element Lifecycle
 
-    ready: function() {
+    ready: function () {
       // `ready` is called after all elements have been configured, but
       // propagates bottom-up. This element's children are ready, but parents
       // are not.
@@ -52,7 +107,7 @@ Example:
       // necessary), or kick off any processes the element wants to perform.
     },
 
-    attached: function() {
+    attached: function () {
       // `attached` fires once the element and its parents have been inserted
       // into a document.
       //
@@ -61,7 +116,7 @@ Example:
       // loading resources, etc).
     },
 
-    detached: function() {
+    detached: function () {
       // The analog to `attached`, `detached` fires when the element has been
       // removed from a document.
       //
@@ -69,6 +124,32 @@ Example:
     },
 
     // Element Behavior
+
+    _getAddPropsButtonText: function(noneAssoc) {
+      return 'Associate with' + (noneAssoc ? '' : ' More') + ' Properties';
+    },
+
+    _getUnitsUrl: function(pmcId, relationSource, relationSourceId, areAssoc) {
+      var url = '/integration-hub/accounts/' + pmcId + '/' + relationSource + '/' + relationSourceId + '/units?areAssoc=' + (areAssoc ? 'true' : 'false');
+      console.log(url);
+      return url;
+    },
+
+    load: function(config) {
+      this.pmcId = config.pmcId;
+      this.relationSource = config.src;
+      this.relationSourceId = config.srcId;
+      this.$.getAssociatedUnits.generateRequest();
+    },
+
+    _handleGetAssociatedUnits: function(evt) {
+      console.log('_handleGetAssociatedUnits called with ', evt);
+      if(evt && evt.detail && evt.detail.response && evt.detail.response.success === 'OK') {
+        var cfg = evt.detail.response.result;
+        console.log('new config received:',cfg);
+        this.associatedUnitsTableConfig = cfg;
+      }
+    }
 
   });
 
