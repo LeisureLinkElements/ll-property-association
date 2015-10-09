@@ -276,11 +276,10 @@ Example:
       this.$.unassociatedUnitsTableContainer.hide();
     },
 
-    _searchUnassociatedUnits: function(evt) {
-      if(evt && _.isObject(evt.detail)) {
+    _searchUnassociatedUnits: function (evt) {
+      if (evt && _.isObject(evt.detail)) {
         this.$.getUnassociatedUnitsRequest.params.nameQuery = evt.detail.name;
         this.$.getUnassociatedUnitsRequest.generateRequest();
-        this._fireLog('_searchUnassociatedUnits with "'+evt.detail.name+'"');
       }
     },
 
