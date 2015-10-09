@@ -257,10 +257,10 @@ Example:
       this.$.getAssociatedUnits.generateRequest();
     },
 
-    _handleGotAssociatedUnits: function (evt) {
-      this._fireLog('_handleGotAssociatedUnits called with ', evt);
-      if (evt && evt.detail && evt.detail.response && evt.detail.response.success === 'OK') {
-        var cfg = evt.detail.response.result;
+    _handleGotAssociatedUnits: function (results) {
+      this._fireLog('_handleGotAssociatedUnits called with ', results);
+      if (this._requestSucceeded(results)) {
+        var cfg = results.detail.response.result;
         this.noAssociatedUnits = true;
         if (cfg) {
           this._fireLog('New associated units config received:', cfg);
@@ -281,10 +281,10 @@ Example:
       this.$.unassociatedUnitsTableContainer.hide();
     },
 
-    _handleGotUnassociatedUnits: function (evt) {
-      this._fireLog('_handleGotUnassociatedUnits called with ', evt);
-      if (evt && evt.detail && evt.detail.response && evt.detail.response.success === 'OK') {
-        var cfg = evt.detail.response.result;
+    _handleGotUnassociatedUnits: function (results) {
+      this._fireLog('_handleGotUnassociatedUnits called with ', results);
+      if (this._requestSucceeded(results)) {
+        var cfg = results.detail.response.result;
         this.noUnassociatedUnits = true;
         if (cfg) {
           this._fireLog('New unassociated units config received:', cfg);
