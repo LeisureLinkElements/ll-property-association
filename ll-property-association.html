@@ -66,14 +66,14 @@ Example:
 
   <template>
 
-    <iron-ajax id="getAssociatedUnits" url="{{assocUnitsRequestUrl}}" handle-as="json"
+    <iron-ajax id="getAssociatedUnits" url="{{unitsRequestUrl}}" params="{'areAssoc':'true', 'nameQuery':''}" handle-as="json"
                on-response="_handleGotAssociatedUnits"></iron-ajax>
-    <iron-ajax id="removeAssociatedUnits" url="{{unitsRequestUrlBase}}" method="DELETE" content-type="application/json"
-               handle-as="json" on-response="_handleRemovedAssociatedUnits"></iron-ajax>
-    <iron-ajax id="getUnassociatedUnits" url="{{unassocUnitsRequestUrl}}" handle-as="json"
+    <iron-ajax id="getUnassociatedUnits" url="{{unitsRequestUrl}}" params="{'areAssoc':'false', 'nameQuery':''}" handle-as="json"
                on-response="_handleGotUnassociatedUnits"></iron-ajax>
-    <iron-ajax id="addUnassociatedUnits" url="{{unitsRequestUrlBase}}" method="POST" content-type="application/json"
+    <iron-ajax id="addUnitsRequest" url="{{unitsRequestUrl}}" method="POST" content-type="application/json"
                handle-as="json" on-response="_handleAddedUnassociatedUnits"></iron-ajax>
+    <iron-ajax id="removeUnits" url="{{unitsRequestUrl}}" method="DELETE" content-type="application/json"
+               handle-as="json" on-response="_handleRemovedAssociatedUnits"></iron-ajax>
 
     <div>
       <div class="row">
@@ -156,15 +156,10 @@ Example:
 
       relationSourceId: String,
 
-      unitsRequestUrlBase: {
+      unitsRequestUrl: {
         type: String,
-        computed: '_getUnitsRequestUrlBase(pmcId, relationSource, relationSourceId)',
-        observer: '_unitsRequestUrlBaseChanged'
+        computed: '_computeUnitsRequestUrl(pmcId, relationSource, relationSourceId)'
       },
-
-      assocUnitsRequestUrl: String,
-
-      unassocUnitsRequestUrl: String,
 
       unassocUnitsSearchString: String,
 
@@ -193,8 +188,6 @@ Example:
           return [];
         }
       },
-
-      unassociatedUnitsUrl: String,
 
       unassociatedUnitsTableConfig: {
         type: Object,
@@ -236,17 +229,8 @@ Example:
       return 'Associate with' + (this.noAssociatedUnits ? '' : ' More') + ' Properties';
     },
 
-    _getUnitsRequestUrlBase: function (pmcId, relationSource, relationSourceId) {
+    _computeUnitsRequestUrl: function (pmcId, relationSource, relationSourceId) {
       return '/integration-hub/accounts/' + pmcId + '/' + relationSource + '/' + relationSourceId + '/units';
-    },
-
-    _getUnitsRequestUrl: function (areAssoc) {
-      return this.unitsRequestUrlBase + '?areAssoc=' + (areAssoc ? 'true' : 'false');
-    },
-
-    _unitsRequestUrlBaseChanged: function () {
-      this.assocUnitsRequestUrl = this._getUnitsRequestUrl(true);
-      this.unassocUnitsRequestUrl = this._getUnitsRequestUrl(false);
     },
 
     load: function () {
@@ -255,7 +239,7 @@ Example:
     },
 
     _getAssociatedUnits: function () {
-      this._fireLog('_getAssociatedUnits from ' + this.assocUnitsRequestUrl);
+      this._fireLog('_getAssociatedUnits');
       this.$.getAssociatedUnits.generateRequest();
     },
 
