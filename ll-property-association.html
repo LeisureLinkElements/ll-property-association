@@ -124,8 +124,7 @@ Example:
       <ll-table id="associatedUnitsTable" fire-log-name="Associated Units Table" fire-logging-enabled="true"
                 fire-log-event-prefix="associated-units-table-" config="{{associatedUnitsTableConfig}}"></ll-table>
     </template>
-    <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to display.
-      <a href="#" on-click="_goAddUnits">Add one now &gt;</a></p></template>
+    <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties are associated with this <span>[[relationSourceSingular]]</span>.<a on-click="_goAddUnits">Add one now &gt;</a></p></template>
 
   </template>
 
