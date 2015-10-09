@@ -56,6 +56,11 @@ Example:
       margin: 0;
       top:80px;
     }
+
+    .filter {
+      margin: 15px 0 0;
+    }
+
   </style>
 
   <template>
@@ -86,7 +91,7 @@ Example:
 
       <h2>Associate this <span>[[relationSourceSingularCapitalized]]</span> with more Properties</h2>
 
-      <div class="container-fluid">
+      <div>
 
         <div class="row">
           <div class="col-md-5">
@@ -97,14 +102,12 @@ Example:
           </div>
         </div>
 
-        <paper-dialog-scrollable can-scroll>
-          <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
-            <ll-table id="unassociatedUnitsTable" fire-log-name="Unassociated Units Table" fire-logging-enabled
-                      config="{{unassociatedUnitsTableConfig}}"></ll-table>
-          </template>
-          <template is="dom-if" if="{{noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to
-            associate.</p></template>
-        </paper-dialog-scrollable>
+        <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
+          <ll-table id="unassociatedUnitsTable" fire-log-name="Unassociated Units Table" fire-logging-enabled
+                    config="{{unassociatedUnitsTableConfig}}"></ll-table>
+        </template>
+        <template is="dom-if" if="{{noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to
+          associate.</p></template>
 
       </div>
 
@@ -278,7 +281,7 @@ Example:
           if (Array.isArray(cfg.items) && cfg.items.length) {
             this.noUnassociatedUnits = false;
           }
-          this.unAssociatedUnitsTableConfig = cfg;
+          this.unassociatedUnitsTableConfig = cfg;
         }
       }
     },
