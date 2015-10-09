@@ -67,10 +67,12 @@ Example:
 
     <iron-ajax id="getAssociatedUnits" url="{{assocUnitsRequestUrl}}" handle-as="json"
                on-response="_handleGotAssociatedUnits"></iron-ajax>
-    <iron-ajax id="getUnassociatedUnits" url="{{unassocUnitsRequestUrl}}" handle-as="json"
-               on-response="_handleGotUnassociatedUnits"></iron-ajax>
     <iron-ajax id="removeAssociatedUnits" url="{{unitsRequestUrlBase}}" method="DELETE" content-type="application/json"
                handle-as="json" on-response="_handleRemovedAssociatedUnits"></iron-ajax>
+    <iron-ajax id="getUnassociatedUnits" url="{{unassocUnitsRequestUrl}}" handle-as="json"
+               on-response="_handleGotUnassociatedUnits"></iron-ajax>
+    <iron-ajax id="addUnassociatedUnits" url="{{unitsRequestUrlBase}}" method="POST" content-type="application/json"
+               handle-as="json" on-response="_handleAddedUnassociatedUnits"></iron-ajax>
 
     <div>
       <div class="row">
@@ -104,7 +106,7 @@ Example:
 
         <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
           <ll-table id="unassociatedUnitsTable" fire-log-name="Unassociated Units Table" fire-logging-enabled
-                    config="{{unassociatedUnitsTableConfig}}"></ll-table>
+                    fire-log-event-prefix="unassociated-units-table-" config="{{unassociatedUnitsTableConfig}}"></ll-table>
         </template>
         <template is="dom-if" if="{{noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to
           associate.</p></template>
@@ -112,8 +114,8 @@ Example:
       </div>
 
       <div class="buttons form-group text-right">
-        <button class="btn btn-link cancel" on-click="_cancelAddUnits">Cancel</button>
-        <button dialog-confirm class="btn btn-primary addNew">Add Properties</button>
+        <button class="btn btn-link cancel" on-click="_closeAddUnits">Cancel</button>
+        <button class="btn btn-primary addNew" on-click="_addUnits">Add Properties</button>
       </div>
 
     </curtain-dialog>
@@ -138,7 +140,8 @@ Example:
     behaviors: [FireLogBehavior],
 
     listeners: {
-      'associated-units-table-selected-items-changed': '_associatedUnitsSelectionChanged'
+      'associated-units-table-selected-items-changed': '_associatedUnitsSelectionChanged',
+      'unassociated-units-table-selected-items-changed': '_unassociatedUnitsSelectionChanged'
     },
 
     properties: {
@@ -176,6 +179,13 @@ Example:
       },
 
       selectedAssociatedUnitIDs: {
+        type: Array,
+        value: function () {
+          return [];
+        }
+      },
+
+      selectedUnassociatedUnitIDs: {
         type: Array,
         value: function () {
           return [];
@@ -267,7 +277,7 @@ Example:
       this.$.unassociatedUnitsTableContainer.show();
     },
 
-    _cancelAddUnits: function () {
+    _closeAddUnits: function () {
       this.$.unassociatedUnitsTableContainer.hide();
     },
 
@@ -299,17 +309,42 @@ Example:
       remover.generateRequest();
     },
 
-    _handleRemovedAssociatedUnits: function (err, results) {
-      this._fireLog('_handleRemovedAssociatedUnits called with err and results:', {
-        err: err,
-        results: results
-      });
-      if (!err) {
+    _handleRemovedAssociatedUnits: function (results) {
+      this._fireLog('_handleRemovedAssociatedUnits called results:', results);
+      if (this._requestSucceeded(results)) {
         this._fireLogFire('orchestrator-display-message', 'Done! Unit' + (this.selectedAssociatedUnitIDs.length > 1 ? 's' : '') + ' removed.');
-        this._getAssociatedUnits();
       } else {
         this._fireLogFire('orchestrator-display-error', 'Failed to remove units!');
       }
+      this._getAssociatedUnits();
+    },
+
+    _unassociatedUnitsSelectionChanged: function (evt) {
+      if (evt && Array.isArray(evt.detail)) {
+        this.selectedUnassociatedUnitIDs = evt.detail;
+      }
+    },
+
+    _addUnits: function () {
+      var adder = this.$.addUnassociatedUnits;
+      adder.body = this.selectedUnassociatedUnitIDs;
+      adder.generateRequest();
+      this._closeAddUnits();
+    },
+
+    _handleAddedUnassociatedUnits: function (results) {
+      this._fireLog('_handleAddedUnassociatedUnits called with', results);
+      if (this._requestSucceeded(results)) {
+        this._fireLogFire('orchestrator-display-message', 'Done! Unit' + (this.selectedUnassociatedUnitIDs.length > 1 ? 's' : '') + ' added.');
+      } else {
+        this._fireLog('_handleAddedUnassociatedUnits error:',err);
+        this._fireLogFire('orchestrator-display-error', 'Failed to add units!');
+      }
+      this._getAssociatedUnits();
+    },
+
+    _requestSucceeded: function(results) {
+      return results && results.detail && results.detail.succeeded;
     }
   });
 
