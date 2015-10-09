@@ -92,6 +92,14 @@ Example:
     </div>
     <hr>
 
+    <template is="dom-if" if="{{!noAssociatedUnits}}" restamp="true">
+      <ll-table id="associatedUnitsTable" fire-log-name="Associated Units Table" fire-logging-enabled
+                fire-log-event-prefix="associated-units-table-" config="{{associatedUnitsTableConfig}}"></ll-table>
+    </template>
+    <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties are
+      associated with this <span>[[relationSourceSingular]]</span>.<a on-click="_goAddUnits">Add one now &gt;</a></p>
+    </template>
+
     <curtain-dialog id="unassociatedUnitsTableContainer" modal entry-animation="slide-down-animation"
                     exit-animation="slide-up-animation">
 
@@ -126,12 +134,6 @@ Example:
       </div>
 
     </curtain-dialog>
-
-    <template is="dom-if" if="{{!noAssociatedUnits}}" restamp="true">
-      <ll-table id="associatedUnitsTable" fire-log-name="Associated Units Table" fire-logging-enabled="true"
-                fire-log-event-prefix="associated-units-table-" config="{{associatedUnitsTableConfig}}"></ll-table>
-    </template>
-    <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties are associated with this <span>[[relationSourceSingular]]</span>.<a on-click="_goAddUnits">Add one now &gt;</a></p></template>
 
   </template>
 
@@ -340,13 +342,13 @@ Example:
       if (this._requestSucceeded(results)) {
         this._fireLogFire('orchestrator-display-message', 'Done! Unit' + (this.selectedUnassociatedUnitIDs.length > 1 ? 's' : '') + ' added.');
       } else {
-        this._fireLog('_handleAddedUnassociatedUnits error:',err);
+        this._fireLog('_handleAddedUnassociatedUnits error:', err);
         this._fireLogFire('orchestrator-display-error', 'Failed to add units!');
       }
       this._getAssociatedUnits();
     },
 
-    _requestSucceeded: function(results) {
+    _requestSucceeded: function (results) {
       return results && results.detail && results.detail.succeeded;
     }
   });
