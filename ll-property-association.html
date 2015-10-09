@@ -33,11 +33,6 @@ Example:
   <style include="shared-styles"></style>
 
   <style>
-    :host {
-      display: block;
-      box-sizing: border-box;
-    }
-
     .noUnitsMessage a {
       padding-left: 20px;
       font-weight: bold;
@@ -52,7 +47,7 @@ Example:
     }
 
     curtain-dialog {
-      padding: 16px;
+      padding: 0 36px;
       border-radius: 3px;
       background: #fff;
       max-width: none !important;
@@ -86,8 +81,8 @@ Example:
     </div>
     <hr>
 
-    <curtain-dialog id="unassociatedUnitsTableContainer" modal withBackdrop entry-animation="slide-down-animation"
-                   exit-animation="slide-up-animation">
+    <curtain-dialog id="unassociatedUnitsTableContainer" modal entry-animation="slide-down-animation"
+                    exit-animation="slide-up-animation">
 
       <h2>Associate this <span>[[relationSourceSingularCapitalized]]</span> with more Properties</h2>
 
@@ -125,7 +120,7 @@ Example:
                 fire-log-event-prefix="associated-units-table-" config="{{associatedUnitsTableConfig}}"></ll-table>
     </template>
     <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to display.
-      <a href="#" on-click="goAddProperties">Add one now &gt;</a></p></template>
+      <a href="#" on-click="_goAddUnits">Add one now &gt;</a></p></template>
 
   </template>
 
