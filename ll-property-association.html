@@ -306,6 +306,7 @@ Example:
     _removeUnits: function () {
       var remover = this.$.removeAssociatedUnits;
       remover.body = this.selectedAssociatedUnitIDs;
+      this._fireLog('_removeUnits',this.selectedAssociatedUnitIDs);
       remover.generateRequest();
     },
 
@@ -328,6 +329,7 @@ Example:
     _addUnits: function () {
       var adder = this.$.addUnassociatedUnits;
       adder.body = this.selectedUnassociatedUnitIDs;
+      this._fireLog('_addUnits',this.selectedUnassociatedUnitIDs);
       adder.generateRequest();
       this._closeAddUnits();
     },
