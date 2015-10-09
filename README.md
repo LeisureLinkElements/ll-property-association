@@ -1,6 +1,6 @@
-# seed-element
+# ll-property-association
 
-An element providing a starting point for your own reusable Polymer elements.
+UI for adding and removing property relations, configurable for any source, such as taxes.
 
 
 ## Dependencies
