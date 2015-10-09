@@ -13,6 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../ll-table/ll-table.html">
 <link rel="import" href="../ll-firelog-behavior/ll-firelog-behavior.html">
 <link rel="import" href="curtain-dialog.html">
+<link rel="import" href="../iron-form.html">
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../lodash/lodash.js">
@@ -55,7 +56,7 @@ Example:
       width: 94% !important;
       z-index: 9999 !important;
       margin: 0;
-      top:80px;
+      top: 80px;
     }
 
     .filter {
@@ -101,15 +102,18 @@ Example:
         <div class="row">
           <div class="col-md-5">
             <div class="filter">
-              <form action="#"><input type="text" name="name" autocomplete="off" placeholder="Search properties by name"
-                                      class="search form-control"><span class="entypo search"></span></form>
+              <form is="iron-form" action="#"><input name="name" autocomplete="off"
+                                                     placeholder="Search properties by name"
+                                                     class="search form-control"><span class="entypo search"></span>
+              </form>
             </div>
           </div>
         </div>
 
         <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
           <ll-table id="unassociatedUnitsTable" fire-log-name="Unassociated Units Table" fire-logging-enabled
-                    fire-log-event-prefix="unassociated-units-table-" config="{{unassociatedUnitsTableConfig}}"></ll-table>
+                    fire-log-event-prefix="unassociated-units-table-"
+                    config="{{unassociatedUnitsTableConfig}}"></ll-table>
         </template>
         <template is="dom-if" if="{{noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to
           associate.</p></template>
@@ -143,7 +147,8 @@ Example:
 
     listeners: {
       'associated-units-table-selected-items-changed': '_associatedUnitsSelectionChanged',
-      'unassociated-units-table-selected-items-changed': '_unassociatedUnitsSelectionChanged'
+      'unassociated-units-table-selected-items-changed': '_unassociatedUnitsSelectionChanged',
+      'iron-form-submit': '_searchUnassociatedUnits'
     },
 
     properties: {
@@ -267,6 +272,14 @@ Example:
 
     _closeAddUnits: function () {
       this.$.unassociatedUnitsTableContainer.hide();
+    },
+
+    _searchUnassociatedUnits: function(evt) {
+      if(evt && _.isObject(evt.detail)) {
+        this.$.getUnassociatedUnitsRequest.params.nameQuery = evt.detail.name;
+        this.$.getUnassociatedUnitsRequest.generateRequest();
+        this._fireLog('_searchUnassociatedUnits with "'+evt.detail.name+'"');
+      }
     },
 
     _handleGotUnassociatedUnits: function (results) {
