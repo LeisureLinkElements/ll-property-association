@@ -22,6 +22,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
     "ll-table": "LeisureLinkElements/ll-table",
+    "ll-firelog-behavior": "LeisureLinkElements/ll-firelog-behavior",
     "paper-elements": "PolymerElements/paper-elements#^1.0.0",
     "neon-elements": "PolymerElements/neon-elements#^1.0.0"
   },
