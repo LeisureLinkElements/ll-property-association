@@ -26,21 +26,18 @@ Unstyled dialog that slides down on 'show' and up on 'hide'
 <dom-module id="curtain-dialog">
 
   <style>
-    iron-icon {
-      margin: 10px -25px 0;
-      color: var(--blue);
-      cursor: pointer;
-    }
-
     h2 {
       margin: 0 0 20px;
+    }
+    .close {
+      font-size:24px;
     }
   </style>
 
   <template>
     <div class="row">
       <div class="col-xs-12 text-right">
-        <iron-icon icon="icons:cancel" on-click="hide"></iron-icon>
+        <span class="close" on-click="hide">x</span>
       </div>
     </div>
     <content></content>
