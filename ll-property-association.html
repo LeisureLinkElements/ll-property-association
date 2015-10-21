@@ -87,7 +87,7 @@ UI for adding and removing property relations, configurable for any source, such
     <hr>
 
     <template is="dom-if" if="{{!noAssociatedUnits}}" restamp="true">
-      <ll-table id="associatedUnitsTable" fire-log-name="Associated Units Table" fire-logging-enabled
+      <ll-table id="associatedUnitsTable" fire-log-name="Associated Units Table" fire-log
                 fire-log-event-prefix="associated-units-table-" config="{{associatedUnitsTableConfig}}"></ll-table>
     </template>
     <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties are
@@ -113,7 +113,7 @@ UI for adding and removing property relations, configurable for any source, such
         </div>
 
         <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
-          <ll-table id="unassociatedUnitsTable" fire-log-name="Unassociated Units Table" fire-logging-enabled
+          <ll-table id="unassociatedUnitsTable" fire-log-name="Unassociated Units Table" fire-log
                     fire-log-event-prefix="unassociated-units-table-"
                     config="{{unassociatedUnitsTableConfig}}"></ll-table>
         </template>
