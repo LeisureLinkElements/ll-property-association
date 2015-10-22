@@ -88,7 +88,7 @@ UI for adding and removing property relations, configurable for any source, such
 
     <template is="dom-if" if="{{!noAssociatedUnits}}" restamp="true">
       <ll-table id="associatedUnitsTable" show-header item-selector-type="checkbox" fire-log-name="Associated Units Table" fire-log
-                fire-log-event-prefix="associated-units-table-" config="{{associatedUnits}}"></ll-table>
+                fire-log-event-prefix="associated-units-table-" items="{{associatedUnits}}"></ll-table>
     </template>
     <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties are
       associated with this <span>[[relationSourceSingular]]</span>.<a on-click="_goAddUnits">Add one now &gt;</a></p>
@@ -115,7 +115,7 @@ UI for adding and removing property relations, configurable for any source, such
         <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
           <ll-table id="unassociatedUnitsTable" show-header item-selector-type="checkbox" fire-log-name="Unassociated Units Table" fire-log
                     fire-log-event-prefix="unassociated-units-table-"
-                    config="{{unassociatedUnits}}"></ll-table>
+                    items="{{unassociatedUnits}}"></ll-table>
         </template>
         <template is="dom-if" if="{{noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to
           associate.</p></template>
@@ -166,7 +166,7 @@ UI for adding and removing property relations, configurable for any source, such
 
       unassocUnitsSearchString: String,
 
-      associatedUnitsTableConfig: {
+      associatedUnits: {
         type: Object,
         value: function () {
           return {};
@@ -192,7 +192,7 @@ UI for adding and removing property relations, configurable for any source, such
         }
       },
 
-      unassociatedUnitsTableConfig: {
+      unassociatedUnits: {
         type: Object,
         value: function () {
           return {};
@@ -249,14 +249,14 @@ UI for adding and removing property relations, configurable for any source, such
     _handleGotAssociatedUnits: function (results) {
       this._fireLog('_handleGotAssociatedUnits called with ', results);
       if (this._requestSucceeded(results)) {
-        var cfg = results.detail.response.result;
+        var units = results.detail.response.result;
         this.noAssociatedUnits = true;
-        if (cfg) {
-          this._fireLog('New associated units config received:', cfg);
-          if (Array.isArray(cfg.items) && cfg.items.length) {
+        if (units) {
+          this._fireLog('New associated units received:', units);
+          if (_.isArray(units) && units.length) {
             this.noAssociatedUnits = false;
           }
-          this.associatedUnitsTableConfig = cfg;
+          this.associatedUnits = units;
         }
       }
     },
@@ -280,20 +280,20 @@ UI for adding and removing property relations, configurable for any source, such
     _handleGotUnassociatedUnits: function (results) {
       this._fireLog('_handleGotUnassociatedUnits called with ', results);
       if (this._requestSucceeded(results)) {
-        var cfg = results.detail.response.result;
+        var units = results.detail.response.result;
         this.noUnassociatedUnits = true;
-        if (cfg) {
-          this._fireLog('New unassociated units config received:', cfg);
-          if (Array.isArray(cfg.items) && cfg.items.length) {
+        if (units) {
+          this._fireLog('New unassociated units received:', units);
+          if (_.isArray(units) && units.length) {
             this.noUnassociatedUnits = false;
           }
-          this.unassociatedUnitsTableConfig = cfg;
+          this.unassociatedUnits = units;
         }
       }
     },
 
     _associatedUnitsSelectionChanged: function (evt) {
-      if (evt && Array.isArray(evt.detail)) {
+      if (evt && _.isArray(evt.detail)) {
         this.selectedAssociatedUnitIDs = evt.detail;
         this.toggleClass('hide', this.selectedAssociatedUnitIDs.length < 1, this.$.buttonRemoveSelected);
       }
@@ -317,7 +317,7 @@ UI for adding and removing property relations, configurable for any source, such
     },
 
     _unassociatedUnitsSelectionChanged: function (evt) {
-      if (evt && Array.isArray(evt.detail)) {
+      if (evt && _.isArray(evt.detail)) {
         this.selectedUnassociatedUnitIDs = evt.detail;
       }
     },
