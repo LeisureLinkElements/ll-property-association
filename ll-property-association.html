@@ -10,13 +10,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../ll-theme/ll-theme.html">
 <link rel="import" href="../ll-theme/shared-styles.html">
-<link rel="import" href="../ll-table/ll-table.html">
-<link rel="import" href="../ll-firelog-behavior/ll-firelog-behavior.html">
-<link rel="import" href="curtain-dialog.html">
 <link rel="import" href="../iron-form.html">
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../lodash/lodash.js">
+<link rel="import" href="../ll-table/ll-table.html">
+<link rel="import" href="../ll-firelog-behavior/ll-firelog-behavior.html">
+<link rel="import" href="../ll-seance-behavior/ll-seance-behavior.html">
+<link rel="import" href="curtain-dialog.html">
 
 <!--
 UI for adding and removing property relations, configurable for any source, such as taxes.
@@ -87,8 +88,9 @@ UI for adding and removing property relations, configurable for any source, such
     <hr>
 
     <template is="dom-if" if="{{!noAssociatedUnits}}" restamp="true">
-      <ll-table id="associatedUnitsTable" show-header item-selector-type="checkbox" fire-log-name="Associated Units Table" fire-log="true"
-                fire-log-event-prefix="associated-units-table-" items="{{associatedUnits}}"></ll-table>
+      <ll-table id="associatedUnitsTable" show-header item-selector-type="checkbox"
+                fire-log-name="Associated Units Table" fire-log="true"
+                fire-log-event-prefix="associated-units-table-"></ll-table>
     </template>
     <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties are
       associated with this <span>[[relationSourceSingular]]</span>.<a on-click="_goAddUnits">Add one now &gt;</a></p>
@@ -113,9 +115,10 @@ UI for adding and removing property relations, configurable for any source, such
         </div>
 
         <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
-          <ll-table id="unassociatedUnitsTable" show-header item-selector-type="checkbox" fire-log-name="Unassociated Units Table" fire-log="true"
-                    fire-log-event-prefix="unassociated-units-table-"
-                    items="{{unassociatedUnits}}"></ll-table>
+          <ll-table id="unassociatedUnitsTable" show-header item-selector-type="checkbox"
+                    fire-log-name="Unassociated Units Table" fire-log="true"
+                    fire-log-event-prefix="unassociated-units-table-">
+          </ll-table>
         </template>
         <template is="dom-if" if="{{noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to
           associate.</p></template>
@@ -139,7 +142,7 @@ UI for adding and removing property relations, configurable for any source, such
 
     is: 'll-property-association',
 
-    behaviors: [FireLogBehavior],
+    behaviors: [LeisureLinkBehaviors.FireLogBehavior, LeisureLinkBehaviors.SeanceBehavior],
 
     listeners: {
       'associated-units-table-selected-items-changed': '_associatedUnitsSelectionChanged',
@@ -166,13 +169,6 @@ UI for adding and removing property relations, configurable for any source, such
 
       unassocUnitsSearchString: String,
 
-      associatedUnits: {
-        type: Array,
-        value: function () {
-          return [];
-        }
-      },
-
       noAssociatedUnits: {
         type: Boolean,
         value: true
@@ -186,13 +182,6 @@ UI for adding and removing property relations, configurable for any source, such
       },
 
       selectedUnassociatedUnitIDs: {
-        type: Array,
-        value: function () {
-          return [];
-        }
-      },
-
-      unassociatedUnits: {
         type: Array,
         value: function () {
           return [];
@@ -256,7 +245,7 @@ UI for adding and removing property relations, configurable for any source, such
           if (_.isArray(units) && units.length) {
             this.noAssociatedUnits = false;
           }
-          this.associatedUnits = units;
+          this.seanceBegin('associatedUnitsTable', 'ready', {items: units});
         }
       }
     },
@@ -287,7 +276,7 @@ UI for adding and removing property relations, configurable for any source, such
           if (_.isArray(units) && units.length) {
             this.noUnassociatedUnits = false;
           }
-          this.unassociatedUnits = units;
+          this.seanceBegin('unassociatedUnitsTable', 'ready', {items: units});
         }
       }
     },
