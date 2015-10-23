@@ -243,9 +243,9 @@ UI for adding and removing property relations, configurable for any source, such
         if (units) {
           this._fireLog('New associated units received:', units);
           if (_.isArray(units) && units.length) {
+            this.seanceBegin('associatedUnitsTable', 'ready', {items: units});
             this.noAssociatedUnits = false;
           }
-          this.seanceBegin('associatedUnitsTable', 'ready', {items: units});
         }
       }
     },
@@ -274,9 +274,9 @@ UI for adding and removing property relations, configurable for any source, such
         if (units) {
           this._fireLog('New unassociated units received:', units);
           if (_.isArray(units) && units.length) {
+            this.seanceBegin('unassociatedUnitsTable', 'ready', {items: units});
             this.noUnassociatedUnits = false;
           }
-          this.seanceBegin('unassociatedUnitsTable', 'ready', {items: units});
         }
       }
     },
