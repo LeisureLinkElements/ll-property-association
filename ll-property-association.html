@@ -78,7 +78,8 @@ UI for adding and removing property relations, configurable for any source, such
         <div class="col-sm-4"><h2>Associated Properties</h2></div>
         <div class="col-sm-8">
           <div class="pull-right">
-            <button id="buttonRemoveSelected" class="btn btn-destructive hide" on-click="_removeUnits">Remove Selected
+            <button id="buttonRemoveSelected" class="btn btn-destructive" on-click="_removeUnits"
+                    hidden$="{{noAssociatedUnitsSelected}}">Remove Selected
             </button>
             <button class="btn btn-default pull-right" on-click="_goAddUnits">[[addUnitsButtonText]]</button>
           </div>
@@ -181,6 +182,11 @@ UI for adding and removing property relations, configurable for any source, such
         }
       },
 
+      noAssociatedUnitsSelected: {
+        type: Boolean,
+        computed: '_computeNoAssociatedUnitsSelected(selectedAssociatedUnitIDs)'
+      },
+
       selectedUnassociatedUnitIDs: {
         type: Array,
         value: function () {
@@ -240,6 +246,7 @@ UI for adding and removing property relations, configurable for any source, such
       if (this._requestSucceeded(results)) {
         var units = results.detail.response.result;
         this.noAssociatedUnits = true;
+        this.selectedAssociatedUnitIDs = [];
         if (units) {
           this._fireLog('New associated units received:', units);
           if (_.isArray(units) && units.length) {
@@ -284,8 +291,11 @@ UI for adding and removing property relations, configurable for any source, such
     _associatedUnitsSelectionChanged: function (evt) {
       if (evt && _.isArray(evt.detail)) {
         this.selectedAssociatedUnitIDs = evt.detail;
-        this.toggleClass('hide', this.selectedAssociatedUnitIDs.length < 1, this.$.buttonRemoveSelected);
       }
+    },
+
+    _computeNoAssociatedUnitsSelected: function (selectedAssociatedUnitIDs) {
+      return selectedAssociatedUnitIDs.length < 1;
     },
 
     _removeUnits: function () {
