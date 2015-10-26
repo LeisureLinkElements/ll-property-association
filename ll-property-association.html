@@ -22,8 +22,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!--
 UI for adding and removing property relations, configurable for any source, such as taxes.
 -->
-
-
 <dom-module id="ll-property-association">
 
   <style include="shared-styles"></style>
@@ -222,6 +220,14 @@ UI for adding and removing property relations, configurable for any source, such
     },
 
     // Element Behavior
+
+    /**
+     * Request currently-associated units from server in order to display them immediately.
+     */
+    load: function () {
+      this._fireLog('load');
+      this._getAssociatedUnits();
+    },
 
     _getAddUnitsButtonText: function () {
       return 'Associate with' + (this.noAssociatedUnits ? '' : ' More') + ' Properties';
