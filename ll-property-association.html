@@ -314,9 +314,9 @@ UI for adding and removing property relations, configurable for any source, such
     _handleRemovedAssociatedUnits: function (results) {
       this._fireLog('_handleRemovedAssociatedUnits called with:', results);
       if (this._requestSucceeded(results)) {
-        this._fireLogFire('orchestrator-display-message', 'Done! Unit' + (this.selectedAssociatedUnitIDs.length > 1 ? 's' : '') + ' removed.');
+        this._fireLogFire('display-message', 'Done! Unit' + (this.selectedAssociatedUnitIDs.length > 1 ? 's' : '') + ' removed.');
       } else {
-        this._fireLogFire('orchestrator-display-error', 'Failed to remove units!');
+        this._fireLogFire('display-error', 'Failed to remove units!');
       }
       this._getAssociatedUnits();
     },
