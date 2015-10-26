@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../ll-property-association.html">
+</head>
+<body>
+
+
+<script>
+
+  describe('ll-property-association', function () {
+
+    var myEl = new LLPropertyAssociation();
+
+    describe('initial loading', function () {
+
+      it('should display a list of associated properties', function () {
+        // set data, nock request, add listener for 'associated-units-table-rendered'
+        var associatedUnitsItems = [
+          {
+            id: 'EJ2wjG0xl',
+            summary: 'Occupancy 8, 5 bedrooms, 3 baths',
+            unit_name: 'Lanikai Sunrise'
+          },
+          {
+            id: '4JdcNqDbl',
+            summary: 'Occupancy 4, 2 bedrooms, 1 baths',
+            unit_name: 'Underneath the Mango Tree'
+          }
+        ];
+        // TODO: nock request here.
+        myEl.addEventListener('associated-units-table-rendered', function () {
+          // TODO: Check table html here.
+        });
+      });
+
+      it('should validate minimal columns configuration', function () {
+        var columns =
+        {
+          first: {
+            label: 'First Name'
+          }
+        };
+        expect(myEl.isValidColumnsConfig(columns)).to.be.true;
+      });
+
+      it('should generate valid cell ids', function () {
+        expect(myEl._getCellId('uwjh83u', 'name')).to.eql('itm-uwjh83u-c-name');
+      });
+
+    });
+
+    describe('simple table with 3 items and no show-headers attribute', function () {
+
+      var myEl = new LLTable();
+
+      it('should fire an event when finished rendering', function (done) {
+
+        myEl.addEventListener('rendered', function (event) {
+          expect(event).to.be.ok;
+          done();
+        });
+
+        myEl.items = [
+          {
+            id: '82ois33',
+            first: 'Darla',
+            last: 'Beaufort',
+            phone: '19997776666'
+          },
+          {
+            id: 'usjiow9',
+            first: 'Gordon',
+            last: 'Bolster',
+            phone: '12778737630'
+          },
+          {
+            id: 'ss2o233',
+            first: 'Darren',
+            last: 'Levitt',
+            phone: '12129998888'
+          }
+        ];
+
+      });
+
+      it('should not have a table header', function () {
+        expect(myEl.$$('.table-header .table-row .table-cell')).to.be.not.ok;
+      });
+
+      it('should have a table body with 4 elements (3 rows and one template)', function () {
+        expect(myEl.$$('.table-body').children).to.have.length(4);
+      });
+
+      it('should have a table body with at least one table row containing 3 cells', function () {
+        expect(myEl.$$('.table-body .table-row').children).to.have.length(4);
+      });
+
+    });
+
+    describe('simple table with 3 items, show-headers attribute set, and item selection checkboxes', function () {
+
+      var myEl = new LLTable();
+      myEl.showHeaders = true;
+      myEl.itemSelectorType = 'checkbox';
+
+      it('should fire an event when finished rendering', function (done) {
+
+        myEl.addEventListener('rendered', function (event) {
+          expect(event).to.be.ok;
+          done();
+        });
+
+        myEl.items = [
+          {
+            id: '82ois33',
+            first: 'Darla',
+            last: 'Beaufort',
+            phone: '19997776666'
+          },
+          {
+            id: 'usjiow9',
+            first: 'Gordon',
+            last: 'Bolster',
+            phone: '12778737630'
+          },
+          {
+            id: 'ss2o233',
+            first: 'Darren',
+            last: 'Levitt',
+            phone: '12129998888'
+          }
+        ];
+
+      });
+
+      it('should have a table header', function () {
+        expect(myEl.$$('.table-header .table-row .table-cell')).to.be.ok;
+      });
+
+      it('should have a table body with 4 elements (3 rows and one template)', function () {
+        expect(myEl.$$('.table-body').children).to.have.length(4);
+      });
+
+      it('should have a table body with at least one table row containing 5 cells', function () {
+        expect(myEl.$$('.table-body .table-row').children).to.have.length(5);
+      });
+
+      describe('item selection', function () {
+
+        it('should have a at least one item selection checkbox', function () {
+          expect(myEl.$$('.item-selector')).to.be.ok;
+        });
+
+        it('should fire an event along with an array of selected item ids of length 1 when an item is selected using a checkbox', function (done) {
+
+          var selects = 0;
+          myEl.addEventListener('selected-items-changed', function (event) {
+            if (selects++ > 0) {
+              // Ignore initial selected-items-changed event when items are set.
+              expect(event).to.be.ok;
+              expect(event.detail).to.be.an('object');
+              expect(event.detail.path).to.equal('selectedItems.length');
+              expect(event.detail.value).to.equal(1);
+              done();
+            }
+          });
+
+          myEl._toggleItemSelectionInput(myEl.$$('.item-selector'), true);
+
+        });
+
+      });
+
+    });
+
+
+  });
+</script>
+
+</body>
+</html>
