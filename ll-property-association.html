@@ -137,7 +137,7 @@ UI for adding and removing property relations, configurable for any source, such
 
 <script>
 
-  Polymer({
+  LLPropertyAssociation = Polymer({
 
     is: 'll-property-association',
 
@@ -223,8 +223,6 @@ UI for adding and removing property relations, configurable for any source, such
       this._fireLog('detached');
     },
 
-    // Element Behavior
-
     /**
      * Request currently-associated units from server in order to display them immediately.
      */
@@ -259,6 +257,8 @@ UI for adding and removing property relations, configurable for any source, such
             this.noAssociatedUnits = false;
           }
         }
+      } else {
+        this._fireLogFire('display-error', 'Could not retrieve associated units.');
       }
     },
 
@@ -290,6 +290,8 @@ UI for adding and removing property relations, configurable for any source, such
             this.noUnassociatedUnits = false;
           }
         }
+      } else {
+        this._fireLogFire('display-error', 'Could not retrieve unassociated units.');
       }
     },
 
@@ -313,9 +315,9 @@ UI for adding and removing property relations, configurable for any source, such
     _handleRemovedAssociatedUnits: function (results) {
       this._fireLog('_handleRemovedAssociatedUnits called with:', results);
       if (this._requestSucceeded(results)) {
-        this._fireLogFire('display-message', 'Done! Unit' + (this.selectedAssociatedUnitIDs.length > 1 ? 's' : '') + ' removed.');
+        this._fireLogFire('display-message', 'Unit' + (this.selectedAssociatedUnitIDs.length > 1 ? 's' : '') + ' removed.');
       } else {
-        this._fireLogFire('display-error', 'Failed to remove units!');
+        this._fireLogFire('display-error', 'Failed to remove units.');
       }
       this._getAssociatedUnits();
     },
@@ -337,10 +339,10 @@ UI for adding and removing property relations, configurable for any source, such
     _handleAddedUnassociatedUnits: function (results) {
       this._fireLog('_handleAddedUnassociatedUnits called with', results);
       if (this._requestSucceeded(results)) {
-        this._fireLogFire('orchestrator-display-message', 'Done! Unit' + (this.selectedUnassociatedUnitIDs.length > 1 ? 's' : '') + ' added.');
+        this._fireLogFire('display-message', 'Unit' + (this.selectedUnassociatedUnitIDs.length > 1 ? 's' : '') + ' added.');
       } else {
         this._fireLog('_handleAddedUnassociatedUnits error:', err);
-        this._fireLogFire('orchestrator-display-error', 'Failed to add units!');
+        this._fireLogFire('display-error', 'Failed to add units.');
       }
       this._getAssociatedUnits();
     },
