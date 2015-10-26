@@ -98,7 +98,7 @@ UI for adding and removing property relations, configurable for any source, such
     <curtain-dialog id="unassociatedUnitsTableContainer" modal entry-animation="slide-down-animation"
                     exit-animation="slide-up-animation">
 
-      <h2>Associate this <span>[[relationSourceSingularCapitalized]]</span> with more Properties</h2>
+      <h2>Associate this <span>[[_relationSourceSingularCapitalized]]</span> with more Properties</h2>
 
       <div>
 
@@ -151,53 +151,57 @@ UI for adding and removing property relations, configurable for any source, such
 
     properties: {
 
+      /* Property management company ID */
       pmcId: String,
 
+      /* Type of relationship to establish (eg: taxes) */
       relationSource: String,
 
-      relationSourceSingular: String,
-
-      relationSourceSingularCapitalized: String,
-
+      /* Singular, capitalized form of relationSource, for display. */
       relationSourceId: String,
 
-      unitsRequestUrl: {
+      /* Singular form of relationSource, for display. */
+      relationSourceSingular: String,
+
+      _relationSourceSingularCapitalized: String,
+
+      _unitsRequestUrl: {
         type: String,
         computed: '_computeUnitsRequestUrl(pmcId, relationSource, relationSourceId)'
       },
 
-      unassocUnitsSearchString: String,
+      _unassocUnitsSearchString: String,
 
-      noAssociatedUnits: {
+      _noAssociatedUnits: {
         type: Boolean,
         value: true
       },
 
-      selectedAssociatedUnitIDs: {
+      _selectedAssociatedUnitIDs: {
         type: Array,
         value: function () {
           return [];
         }
       },
 
-      noAssociatedUnitsSelected: {
+      _noAssociatedUnitsSelected: {
         type: Boolean,
         computed: '_computeNoAssociatedUnitsSelected(selectedAssociatedUnitIDs)'
       },
 
-      selectedUnassociatedUnitIDs: {
+      _selectedUnassociatedUnitIDs: {
         type: Array,
         value: function () {
           return [];
         }
       },
 
-      noUnassociatedUnits: {
+      _noUnassociatedUnits: {
         type: Boolean,
         value: true
       },
 
-      addUnitsButtonText: {
+      _addUnitsButtonText: {
         type: String,
         computed: '_getAddUnitsButtonText(noAssociatedUnits)'
       }
@@ -208,7 +212,7 @@ UI for adding and removing property relations, configurable for any source, such
 
     ready: function () {
       this._fireLog('ready');
-      this.relationSourceSingularCapitalized = _.capitalize(this.relationSourceSingular);
+      this._relationSourceSingularCapitalized = _.capitalize(this.relationSourceSingular);
     },
 
     attached: function () {
@@ -235,11 +239,6 @@ UI for adding and removing property relations, configurable for any source, such
 
     _computeUnitsRequestUrl: function (pmcId, relationSource, relationSourceId) {
       return '/integration-hub/accounts/' + pmcId + '/' + relationSource + '/' + relationSourceId + '/units';
-    },
-
-    load: function () {
-      this._fireLog('load');
-      this._getAssociatedUnits();
     },
 
     _getAssociatedUnits: function () {
