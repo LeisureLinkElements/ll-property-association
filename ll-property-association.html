@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../ll-theme/ll-theme.html">
 <link rel="import" href="../ll-theme/shared-styles.html">
-<link rel="import" href="../iron-form.html">
+<link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../lodash/lodash.js">
@@ -87,7 +87,7 @@ UI for adding and removing property relations, configurable for any source, such
     <hr>
 
     <template is="dom-if" if="{{!noAssociatedUnits}}" restamp="true">
-      <ll-table id="associatedUnitsTable" show-header item-selector-type="checkbox"
+      <ll-table id="associatedUnitsTable" item-selector-type="checkbox"
                 fire-log-name="Associated Units Table" fire-log="true"
                 fire-log-event-prefix="associated-units-table-"></ll-table>
     </template>
@@ -114,7 +114,7 @@ UI for adding and removing property relations, configurable for any source, such
         </div>
 
         <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
-          <ll-table id="unassociatedUnitsTable" show-header item-selector-type="checkbox"
+          <ll-table id="unassociatedUnitsTable" item-selector-type="checkbox"
                     fire-log-name="Unassociated Units Table" fire-log="true"
                     fire-log-event-prefix="unassociated-units-table-">
           </ll-table>
@@ -247,9 +247,9 @@ UI for adding and removing property relations, configurable for any source, such
     _handleGotAssociatedUnits: function (results) {
       this._fireLog('_handleGotAssociatedUnits called with ', results);
       if (this._requestSucceeded(results)) {
-        var units = results.detail.response.result;
         this.noAssociatedUnits = true;
         this.selectedAssociatedUnitIDs = [];
+        var units = results.detail.response.result;
         if (units) {
           this._fireLog('New associated units received:', units);
           if (_.isArray(units) && units.length) {
@@ -258,7 +258,7 @@ UI for adding and removing property relations, configurable for any source, such
           }
         }
       } else {
-        this._fireLogFire('display-error', 'Could not retrieve associated units.');
+        this._fireLogFire('display-error', 'Could not retrieve associated properties.');
       }
     },
 
@@ -291,7 +291,7 @@ UI for adding and removing property relations, configurable for any source, such
           }
         }
       } else {
-        this._fireLogFire('display-error', 'Could not retrieve unassociated units.');
+        this._fireLogFire('display-error', 'Could not retrieve unassociated properties.');
       }
     },
 
@@ -315,7 +315,8 @@ UI for adding and removing property relations, configurable for any source, such
     _handleRemovedAssociatedUnits: function (results) {
       this._fireLog('_handleRemovedAssociatedUnits called with:', results);
       if (this._requestSucceeded(results)) {
-        this._fireLogFire('display-message', 'Unit' + (this.selectedAssociatedUnitIDs.length > 1 ? 's' : '') + ' removed.');
+        var unitsRemoved = results.detail.response.result.length;
+        this._fireLogFire('display-message', unitsRemoved + ' unit' + (unitsRemoved.length > 1 ? 's' : '') + ' removed.');
       } else {
         this._fireLogFire('display-error', 'Failed to remove units.');
       }
@@ -339,16 +340,16 @@ UI for adding and removing property relations, configurable for any source, such
     _handleAddedUnassociatedUnits: function (results) {
       this._fireLog('_handleAddedUnassociatedUnits called with', results);
       if (this._requestSucceeded(results)) {
-        this._fireLogFire('display-message', 'Unit' + (this.selectedUnassociatedUnitIDs.length > 1 ? 's' : '') + ' added.');
+        var unitsAdded = results.detail.response.result.length;
+        this._fireLogFire('display-message', unitsAdded + ' unit' + (unitsAdded > 1 ? 's' : '') + ' added.');
       } else {
-        this._fireLog('_handleAddedUnassociatedUnits error:', err);
         this._fireLogFire('display-error', 'Failed to add units.');
       }
       this._getAssociatedUnits();
     },
 
     _requestSucceeded: function (results) {
-      return results && results.detail && results.detail.succeeded;
+      return results && results.detail && results.detail.succeeded && results.detail.response && results.detail.response.result;
     }
   });
 
