@@ -346,8 +346,13 @@ UI for adding and removing property relations, configurable for any source, such
       this._getAssociatedUnits();
     },
 
-    _requestSucceeded: function (results) {
-      return results && results.detail && results.detail.succeeded && results.detail.response && results.detail.response.result;
+    _requestSucceeded: function (results, withResult) {
+      var succeeded = results && results.detail && results.detail.succeeded;
+      if (withResult) {
+        return succeeded && results.detail.response && results.detail.response.result;
+      } else {
+        return succeeded;
+      }
     }
   });
 
