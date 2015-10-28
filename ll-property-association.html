@@ -1,12 +1,3 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../ll-theme/ll-theme.html">
 <link rel="import" href="../ll-theme/shared-styles.html">
@@ -20,7 +11,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="curtain-dialog.html">
 
 <!--
+### Summary
 UI for adding and removing property relations, configurable for any source, such as taxes.
+### Usage
+1. Add tag to html:
+        <ll-property-association
+            pmc-id="iwiks932"
+            relation-source="taxes"
+            relation-source-singular="tax"
+            relation-source-id="98ksh982">
+        </ll-property-association>
+1. Optional: Set properties with javascript instead:
+        var propAssocs = document.getElementsByTagName("ll-property-association");
+        propAssocs.pmcId = "iwiks932";
+        propAssocs.relationSource = "taxes";
+        propAssocs.relationSourceSingular = "tax";
+        propAssocs.relationSourceId = "98ksh982";
+1. Optional: Add event listeners for messages and errors:
+        var propAssocs = document.getElementsByTagName("ll-property-association");
+        if(propAssocs.length) {
+          var propAssoc = propAssocs[0];
+          propAssoc.addEventListener('display-message', function (evt) {
+            alert('message: '+evt.detail);
+          });
+          propAssoc.addEventListener('display-error', function (evt) {
+            alert('error: '+evt.detail);
+          });
+        }
+1. Optional debugging attributes: Set attribute fire-log and optional fire-log-name="Property Association UI" to see debugging messages.
+1. Display associated properties:
+        propAssoc.load();
 -->
 <dom-module id="ll-property-association">
 
