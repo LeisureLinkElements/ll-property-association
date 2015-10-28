@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../ll-property-association.html">
+</head>
+<body>
+
+
+<script>
+
+  describe('ll-property-association', function () {
+
+    var getPreparedElement = function () {
+      var myEl = new LLPropertyAssociation();
+      myEl.pmcId = 'pmc123';
+      myEl.relationSource = 'taxes';
+      myEl.relationSourceId = 'tax123';
+      return myEl;
+    }
+
+    /**
+     * Prevent "done() called multiple times" errors by removing event listener before calling done.
+     * @param element {object}
+     * @param eventType {string}
+     * @param done {function}
+     */
+    var listenForElementEvent = function (element, eventType, done) {
+      var handleEvent = function (evt) {
+        evt.target.removeEventListener(eventType, handleEvent);
+        if (done) {
+          done();
+        }
+      };
+      element.addEventListener(eventType, handleEvent);
+    };
+
+    var units = [
+      {
+        id: 'EJ2wjG0xl',
+        summary: 'Occupancy 8, 5 bedrooms, 3 baths',
+        unit_name: 'Lanikai Sunrise'
+      },
+      {
+        id: '4JdcNqDbl',
+        summary: 'Occupancy 4, 2 bedrooms, 1 baths',
+        unit_name: 'Underneath the Mango Tree'
+      }
+    ];
+
+    describe('sending requests', function () {
+
+      var myEl = getPreparedElement();
+
+      it('correctly computes base url for all requests', function () {
+        myEl.pmcId = 'pmc123';
+        myEl.relationSource = 'taxes';
+        myEl.relationSourceId = 'tax123';
+        expect(myEl._unitsRequestUrl).to.eql('/integration-hub/accounts/pmc123/taxes/tax123/units');
+      });
+
+      it('should generate getAssociatedUnitsRequest request on load', function (done) {
+        myEl.$.getAssociatedUnitsRequest.generateRequest = function () {
+          // Test will not finish execution unless done is invoked. Passing criteria is test finishing
+          done();
+        };
+        myEl.load();
+      });
+
+      it('should generate getUnassociatedUnitsRequest on _goAddUnits', function (done) {
+        myEl.$.getUnassociatedUnitsRequest.generateRequest = function () {
+          done();
+        };
+        myEl._goAddUnits();
+      });
+
+      it('should generate removeUnitsRequest on _removeUnits', function (done) {
+        myEl.$.removeUnitsRequest.generateRequest = function () {
+          done();
+        };
+        myEl._removeUnits();
+      });
+
+      it('should generate addUnitsRequest on _addUnits', function (done) {
+        myEl.$.addUnitsRequest.generateRequest = function () {
+          done();
+        };
+        myEl._addUnits();
+      });
+
+    });
+
+    describe('handling responses', function () {
+
+      var myEl = getPreparedElement();
+
+      it('should fire an error if getAssociatedUnitsRequest fails', function (done) {
+        var requestResult = {
+          detail: {
+            succeeded: false
+          }
+        };
+        listenForElementEvent(myEl, 'display-error', done);
+        myEl._handleGotAssociatedUnits(requestResult);
+      });
+
+      it('should fire an error if getUnassociatedUnitsRequest fails', function (done) {
+        var requestResult = {
+          detail: {
+            succeeded: false
+          }
+        };
+        listenForElementEvent(myEl, 'display-error', done);
+        myEl._handleGotUnassociatedUnits(requestResult);
+      });
+
+      it('should fire a message if addUnitsRequest succeeds', function (done) {
+        var requestResult = {
+          detail: {
+            succeeded: true,
+            response: {
+              result: units
+            }
+          }
+        };
+        listenForElementEvent(myEl, 'display-message', done);
+        myEl._handleAddedUnassociatedUnits(requestResult);
+      });
+
+      it('should fire an error if addUnitsRequest fails', function (done) {
+        var requestResult = {
+          detail: {
+            succeeded: false
+          }
+        };
+        listenForElementEvent(myEl, 'display-error', done);
+        myEl._handleAddedUnassociatedUnits(requestResult);
+      });
+
+      it('should fire a message if removeUnitsRequest succeeds', function (done) {
+        var requestResult = {
+          detail: {
+            succeeded: true,
+            response: {
+              result: units
+            }
+          }
+        };
+        listenForElementEvent(myEl, 'display-message', done);
+        myEl._handleRemovedAssociatedUnits(requestResult);
+      });
+
+      it('should fire an error if removeUnitsRequest fails', function (done) {
+        var requestResult = {
+          detail: {
+            succeeded: false
+          }
+        };
+        listenForElementEvent(myEl, 'display-error', done);
+        myEl._handleRemovedAssociatedUnits(requestResult);
+      });
+
+    });
+
+    describe('displaying properties', function () {
+
+      var myEl = getPreparedElement();
+
+      document.body.appendChild(myEl);
+
+      it('should display a list of associated properties upon response to getAssociatedUnitsRequest', function (done) {
+        var requestResult = {
+          detail: {
+            succeeded: true,
+            response: {
+              result: units
+            }
+          }
+        };
+        myEl.addEventListener('associated-units-table-rendered', function () {
+          var table = myEl.$$('#associatedUnitsTable');
+          expect(table).to.be.ok;
+          expect(table.$$('#itm-4JdcNqDbl-c-summary')).to.be.ok; // Last table cell
+          expect(table.$$('.item-selector')).to.be.ok; // First check-box
+          done();
+        });
+        myEl._handleGotAssociatedUnits(requestResult);
+      });
+
+      it('should display a list of unassociated properties upon response to getUnssociatedUnitsRequest', function (done) {
+        var requestResult = {
+          detail: {
+            succeeded: true,
+            response: {
+              result: units
+            }
+          }
+        };
+        myEl.addEventListener('unassociated-units-table-rendered', function () {
+          var table = myEl.$$('#unassociatedUnitsTable');
+          expect(table).to.be.ok;
+          expect(table.$$('#itm-4JdcNqDbl-c-summary')).to.be.ok; // Last table cell
+          expect(table.$$('.item-selector')).to.be.ok; // First check-box
+          done();
+        });
+        myEl._handleGotUnassociatedUnits(requestResult);
+      });
+
+    });
+
+
+  });
+</script>
+
+</body>
+</html>
