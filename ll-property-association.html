@@ -60,15 +60,15 @@ UI for adding and removing property relations, configurable for any source, such
 
   <template>
 
-    <iron-ajax id="getAssociatedUnitsRequest" url="{{unitsRequestUrl}}" params='{"areAssoc":"true", "nameQuery":""}'
+    <iron-ajax id="getAssociatedUnitsRequest" url="{{_unitsRequestUrl}}" params='{"areAssoc":"true", "nameQuery":""}'
                handle-as="json"
                on-response="_handleGotAssociatedUnits"></iron-ajax>
-    <iron-ajax id="getUnassociatedUnitsRequest" url="{{unitsRequestUrl}}" params='{"areAssoc":"false", "nameQuery":""}'
+    <iron-ajax id="getUnassociatedUnitsRequest" url="{{_unitsRequestUrl}}" params='{"areAssoc":"false", "nameQuery":""}'
                handle-as="json"
                on-response="_handleGotUnassociatedUnits"></iron-ajax>
-    <iron-ajax id="addUnitsRequest" url="{{unitsRequestUrl}}" method="POST" content-type="application/json"
+    <iron-ajax id="addUnitsRequest" url="{{_unitsRequestUrl}}" method="POST" content-type="application/json"
                handle-as="json" on-response="_handleAddedUnassociatedUnits"></iron-ajax>
-    <iron-ajax id="removeUnitsRequest" url="{{unitsRequestUrl}}" method="DELETE" content-type="application/json"
+    <iron-ajax id="removeUnitsRequest" url="{{_unitsRequestUrl}}" method="DELETE" content-type="application/json"
                handle-as="json" on-response="_handleRemovedAssociatedUnits"></iron-ajax>
 
     <div>
