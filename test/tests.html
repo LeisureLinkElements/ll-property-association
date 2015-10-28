@@ -16,6 +16,14 @@
 
   describe('ll-property-association', function () {
 
+    var getPreparedElement = function() {
+      var myEl = new LLPropertyAssociation();
+      myEl.pmcId = 'pmc123';
+      myEl.relationSource = 'taxes';
+      myEl.relationSourceId = 'tax123';
+      return myEl;
+    }
+
     /**
      * Prevent "done() called multiple times" errors by removing event listener before calling done.
      * @param element {object}
@@ -32,8 +40,6 @@
       element.addEventListener(eventType, handleEvent);
     };
 
-    var myEl = new LLPropertyAssociation();
-
     var units = [
       {
         id: 'EJ2wjG0xl',
@@ -48,6 +54,8 @@
     ];
 
     describe('sending requests', function () {
+
+      var myEl = getPreparedElement();
 
       it('correctly computes base url for all requests', function () {
         myEl.pmcId = 'pmc123';
@@ -88,6 +96,8 @@
     });
 
     describe('handling responses', function () {
+
+      var myEl = getPreparedElement();
 
       it('should fire an error if getAssociatedUnitsRequest fails', function (done) {
         var requestResult = {
@@ -159,6 +169,8 @@
 
     describe('displaying properties', function () {
 
+      var myEl = getPreparedElement();
+
       document.body.appendChild(myEl);
 
       it('should display a list of associated properties upon response to getAssociatedUnitsRequest', function (done) {
@@ -174,6 +186,7 @@
           var table = myEl.$$('#associatedUnitsTable');
           expect(table).to.be.ok;
           expect(table.$$('#itm-4JdcNqDbl-c-summary')).to.be.ok; // Last table cell
+          expect(table.$$('.item-selector')).to.be.ok; // First check-box
           done();
         });
         myEl._handleGotAssociatedUnits(requestResult);
@@ -192,6 +205,7 @@
           var table = myEl.$$('#unassociatedUnitsTable');
           expect(table).to.be.ok;
           expect(table.$$('#itm-4JdcNqDbl-c-summary')).to.be.ok; // Last table cell
+          expect(table.$$('.item-selector')).to.be.ok; // First check-box
           done();
         });
         myEl._handleGotUnassociatedUnits(requestResult);
