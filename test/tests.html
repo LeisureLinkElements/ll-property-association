@@ -16,7 +16,7 @@
 
   describe('ll-property-association', function () {
 
-    var getPreparedElement = function() {
+    var getPreparedElement = function () {
       var myEl = new LLPropertyAssociation();
       myEl.pmcId = 'pmc123';
       myEl.relationSource = 'taxes';
@@ -33,7 +33,7 @@
     var listenForElementEvent = function (element, eventType, done) {
       var handleEvent = function (evt) {
         evt.target.removeEventListener(eventType, handleEvent);
-        if(done) {
+        if (done) {
           done();
         }
       };
