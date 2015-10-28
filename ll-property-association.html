@@ -16,28 +16,26 @@ UI for adding and removing property relations, configurable for any source, such
 ### Usage
 1. Add tag to html:
         <ll-property-association
+            id="myPropAssoc"
             pmc-id="iwiks932"
             relation-source="taxes"
             relation-source-singular="tax"
             relation-source-id="98ksh982">
         </ll-property-association>
 1. Optional: Set properties with javascript instead:
-        var propAssocs = document.getElementsByTagName("ll-property-association");
-        propAssocs.pmcId = "iwiks932";
-        propAssocs.relationSource = "taxes";
-        propAssocs.relationSourceSingular = "tax";
-        propAssocs.relationSourceId = "98ksh982";
+        var propAssoc = document.getElementById("myPropAssoc");
+        propAssoc.pmcId = "iwiks932";
+        propAssoc.relationSource = "taxes";
+        propAssoc.relationSourceSingular = "tax";
+        propAssoc.relationSourceId = "98ksh982";
 1. Optional: Add event listeners for messages and errors:
-        var propAssocs = document.getElementsByTagName("ll-property-association");
-        if(propAssocs.length) {
-          var propAssoc = propAssocs[0];
-          propAssoc.addEventListener('display-message', function (evt) {
-            alert('message: '+evt.detail);
-          });
-          propAssoc.addEventListener('display-error', function (evt) {
-            alert('error: '+evt.detail);
-          });
-        }
+        var propAssoc = document.getElementById("myPropAssoc");
+        propAssoc.addEventListener('display-message', function (evt) {
+          alert('message: '+evt.detail);
+        });
+        propAssoc.addEventListener('display-error', function (evt) {
+          alert('error: '+evt.detail);
+        });
 1. Optional debugging attributes: Set attribute fire-log and optional fire-log-name="Property Association UI" to see debugging messages.
 1. Display associated properties:
         propAssoc.load();
