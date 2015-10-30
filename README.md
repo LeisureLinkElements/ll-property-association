@@ -31,7 +31,7 @@ UI for adding and removing property relations, configurable for any source, such
           alert('error: '+evt.detail);
         });
         
-1. Optional debugging attributes: Set attribute fire-log and optional fire-log-name="Property Association UI" to see debugging messages.
+1. Optional debugging attributes: Set attribute fire-log and optional fire-log-name="Property Association UI" to output debugging messages to console.
 1. Display associated properties:
 
         propAssoc.load();
