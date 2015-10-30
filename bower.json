@@ -21,9 +21,10 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.0",
     "paper-elements": "PolymerElements/paper-elements#^1.0.0",
     "neon-elements": "PolymerElements/neon-elements#^1.0.0",
-    "ll-table": "LeisureLinkElements/ll-table#build-tests-and-demos",
+    "ll-table": "LeisureLinkElements/ll-table",
     "ll-firelog-behavior": "LeisureLinkElements/ll-firelog-behavior",
     "ll-seance-behavior": "LeisureLinkElements/ll-seance-behavior"
   },

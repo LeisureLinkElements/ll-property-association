@@ -1,7 +1,40 @@
 # ll-property-association
 
+### Summary
 UI for adding and removing property relations, configurable for any source, such as taxes.
+### Usage
+1. Add tag to html:
 
+        <ll-property-association
+            id="myPropAssoc"
+            pmc-id="iwiks932"
+            relation-source="taxes"
+            relation-source-singular="tax"
+            relation-source-id="98ksh982">
+        </ll-property-association>
+        
+1. Optional: Set properties with javascript instead:
+
+        var propAssoc = document.getElementById("myPropAssoc");
+        propAssoc.pmcId = "iwiks932";
+        propAssoc.relationSource = "taxes";
+        propAssoc.relationSourceSingular = "tax";
+        propAssoc.relationSourceId = "98ksh982";
+        
+1. Optional: Add event listeners for messages and errors:
+
+        var propAssoc = document.getElementById("myPropAssoc");
+        propAssoc.addEventListener('display-message', function (evt) {
+          alert('message: '+evt.detail);
+        });
+        propAssoc.addEventListener('display-error', function (evt) {
+          alert('error: '+evt.detail);
+        });
+        
+1. Optional debugging attributes: Set attribute fire-log and optional fire-log-name="Property Association UI" to output debugging messages to console.
+1. Display associated properties:
+
+        propAssoc.load();
 
 ## Dependencies
 

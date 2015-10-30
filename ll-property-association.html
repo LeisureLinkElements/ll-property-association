@@ -1,16 +1,7 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../ll-theme/ll-theme.html">
 <link rel="import" href="../ll-theme/shared-styles.html">
-<link rel="import" href="../iron-form.html">
+<link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../lodash/lodash.js">
@@ -20,7 +11,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="curtain-dialog.html">
 
 <!--
+### Summary
 UI for adding and removing property relations, configurable for any source, such as taxes.
+### Usage
+1. Add tag to html:
+        <ll-property-association
+            id="myPropAssoc"
+            pmc-id="iwiks932"
+            relation-source="taxes"
+            relation-source-singular="tax"
+            relation-source-id="98ksh982">
+        </ll-property-association>
+1. Optional: Set properties with javascript instead:
+        var propAssoc = document.getElementById("myPropAssoc");
+        propAssoc.pmcId = "iwiks932";
+        propAssoc.relationSource = "taxes";
+        propAssoc.relationSourceSingular = "tax";
+        propAssoc.relationSourceId = "98ksh982";
+1. Optional: Add event listeners for messages and errors:
+        var propAssoc = document.getElementById("myPropAssoc");
+        propAssoc.addEventListener('display-message', function (evt) {
+          alert('message: '+evt.detail);
+        });
+        propAssoc.addEventListener('display-error', function (evt) {
+          alert('error: '+evt.detail);
+        });
+1. Optional debugging attributes: Set attribute fire-log and optional fire-log-name="Property Association UI" to output debugging messages to console.
+1. Display associated properties:
+        propAssoc.load();
 -->
 <dom-module id="ll-property-association">
 
@@ -60,15 +78,15 @@ UI for adding and removing property relations, configurable for any source, such
 
   <template>
 
-    <iron-ajax id="getAssociatedUnitsRequest" url="{{unitsRequestUrl}}" params='{"areAssoc":"true", "nameQuery":""}'
+    <iron-ajax id="getAssociatedUnitsRequest" url="{{_unitsRequestUrl}}" params='{"areAssoc":"true", "nameQuery":""}'
                handle-as="json"
                on-response="_handleGotAssociatedUnits"></iron-ajax>
-    <iron-ajax id="getUnassociatedUnitsRequest" url="{{unitsRequestUrl}}" params='{"areAssoc":"false", "nameQuery":""}'
+    <iron-ajax id="getUnassociatedUnitsRequest" url="{{_unitsRequestUrl}}" params='{"areAssoc":"false", "nameQuery":""}'
                handle-as="json"
                on-response="_handleGotUnassociatedUnits"></iron-ajax>
-    <iron-ajax id="addUnitsRequest" url="{{unitsRequestUrl}}" method="POST" content-type="application/json"
+    <iron-ajax id="addUnitsRequest" url="{{_unitsRequestUrl}}" method="POST" content-type="application/json"
                handle-as="json" on-response="_handleAddedUnassociatedUnits"></iron-ajax>
-    <iron-ajax id="removeUnitsRequest" url="{{unitsRequestUrl}}" method="DELETE" content-type="application/json"
+    <iron-ajax id="removeUnitsRequest" url="{{_unitsRequestUrl}}" method="DELETE" content-type="application/json"
                handle-as="json" on-response="_handleRemovedAssociatedUnits"></iron-ajax>
 
     <div>
@@ -77,21 +95,21 @@ UI for adding and removing property relations, configurable for any source, such
         <div class="col-sm-8">
           <div class="pull-right">
             <button id="buttonRemoveSelected" class="btn btn-destructive" on-click="_removeUnits"
-                    hidden$="{{noAssociatedUnitsSelected}}">Remove Selected
+                    hidden$="{{_noAssociatedUnitsSelected}}">Remove Selected
             </button>
-            <button class="btn btn-default pull-right" on-click="_goAddUnits">[[addUnitsButtonText]]</button>
+            <button class="btn btn-default pull-right" on-click="_goAddUnits">[[_addUnitsButtonText]]</button>
           </div>
         </div>
       </div>
     </div>
     <hr>
 
-    <template is="dom-if" if="{{!noAssociatedUnits}}" restamp="true">
-      <ll-table id="associatedUnitsTable" show-header item-selector-type="checkbox"
+    <template is="dom-if" if="{{!_noAssociatedUnits}}" restamp="true">
+      <ll-table id="associatedUnitsTable" item-selector-type="checkbox"
                 fire-log-name="Associated Units Table" fire-log="true"
                 fire-log-event-prefix="associated-units-table-"></ll-table>
     </template>
-    <template is="dom-if" if="{{noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties are
+    <template is="dom-if" if="{{_noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties are
       associated with this <span>[[relationSourceSingular]]</span>.<a on-click="_goAddUnits">Add one now &gt;</a></p>
     </template>
 
@@ -113,13 +131,13 @@ UI for adding and removing property relations, configurable for any source, such
           </div>
         </div>
 
-        <template is="dom-if" if="{{!noUnassociatedUnits}}" restamp="true">
-          <ll-table id="unassociatedUnitsTable" show-header item-selector-type="checkbox"
+        <template is="dom-if" if="{{!_noUnassociatedUnits}}" restamp="true">
+          <ll-table id="unassociatedUnitsTable" item-selector-type="checkbox"
                     fire-log-name="Unassociated Units Table" fire-log="true"
                     fire-log-event-prefix="unassociated-units-table-">
           </ll-table>
         </template>
-        <template is="dom-if" if="{{noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to
+        <template is="dom-if" if="{{_noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to
           associate.</p></template>
 
       </div>
@@ -137,7 +155,7 @@ UI for adding and removing property relations, configurable for any source, such
 
 <script>
 
-  Polymer({
+  LLPropertyAssociation = Polymer({
 
     is: 'll-property-association',
 
@@ -177,16 +195,16 @@ UI for adding and removing property relations, configurable for any source, such
         value: true
       },
 
+      _noAssociatedUnitsSelected: {
+        type: Boolean,
+        computed: '_computeNoAssociatedUnitsSelected(_selectedAssociatedUnitIDs)'
+      },
+
       _selectedAssociatedUnitIDs: {
         type: Array,
         value: function () {
           return [];
         }
-      },
-
-      _noAssociatedUnitsSelected: {
-        type: Boolean,
-        computed: '_computeNoAssociatedUnitsSelected(selectedAssociatedUnitIDs)'
       },
 
       _selectedUnassociatedUnitIDs: {
@@ -203,7 +221,7 @@ UI for adding and removing property relations, configurable for any source, such
 
       _addUnitsButtonText: {
         type: String,
-        computed: '_getAddUnitsButtonText(noAssociatedUnits)'
+        computed: '_getAddUnitsButtonText(_noAssociatedUnits)'
       }
 
     },
@@ -223,8 +241,6 @@ UI for adding and removing property relations, configurable for any source, such
       this._fireLog('detached');
     },
 
-    // Element Behavior
-
     /**
      * Request currently-associated units from server in order to display them immediately.
      */
@@ -234,7 +250,7 @@ UI for adding and removing property relations, configurable for any source, such
     },
 
     _getAddUnitsButtonText: function () {
-      return 'Associate with' + (this.noAssociatedUnits ? '' : ' More') + ' Properties';
+      return 'Associate with' + (this._noAssociatedUnits ? '' : ' More') + ' Properties';
     },
 
     _computeUnitsRequestUrl: function (pmcId, relationSource, relationSourceId) {
@@ -248,17 +264,19 @@ UI for adding and removing property relations, configurable for any source, such
 
     _handleGotAssociatedUnits: function (results) {
       this._fireLog('_handleGotAssociatedUnits called with ', results);
-      if (this._requestSucceeded(results)) {
+      if (this._requestSucceeded(results, true)) {
+        this._noAssociatedUnits = true;
+        this._selectedAssociatedUnitIDs = [];
         var units = results.detail.response.result;
-        this.noAssociatedUnits = true;
-        this.selectedAssociatedUnitIDs = [];
         if (units) {
           this._fireLog('New associated units received:', units);
           if (_.isArray(units) && units.length) {
             this.seanceBegin('associatedUnitsTable', 'attached', {items: units});
-            this.noAssociatedUnits = false;
+            this._noAssociatedUnits = false;
           }
         }
+      } else {
+        this._fireLogFire('display-error', 'Could not retrieve associated properties.');
       }
     },
 
@@ -280,73 +298,79 @@ UI for adding and removing property relations, configurable for any source, such
 
     _handleGotUnassociatedUnits: function (results) {
       this._fireLog('_handleGotUnassociatedUnits called with ', results);
-      if (this._requestSucceeded(results)) {
+      if (this._requestSucceeded(results, true)) {
         var units = results.detail.response.result;
-        this.noUnassociatedUnits = true;
+        this._noUnassociatedUnits = true;
         if (units) {
           this._fireLog('New unassociated units received:', units);
           if (_.isArray(units) && units.length) {
             this.seanceBegin('unassociatedUnitsTable', 'attached', {items: units});
-            this.noUnassociatedUnits = false;
+            this._noUnassociatedUnits = false;
           }
         }
+      } else {
+        this._fireLogFire('display-error', 'Could not retrieve unassociated properties.');
       }
     },
 
     _associatedUnitsSelectionChanged: function (evt) {
       if (evt && _.isArray(evt.detail)) {
-        this.selectedAssociatedUnitIDs = evt.detail;
+        this._selectedAssociatedUnitIDs = evt.detail;
       }
     },
 
-    _computeNoAssociatedUnitsSelected: function (selectedAssociatedUnitIDs) {
-      return selectedAssociatedUnitIDs.length < 1;
+    _computeNoAssociatedUnitsSelected: function (_selectedAssociatedUnitIDs) {
+      return _selectedAssociatedUnitIDs.length < 1;
     },
 
     _removeUnits: function () {
       var remover = this.$.removeUnitsRequest;
-      remover.body = this.selectedAssociatedUnitIDs;
+      remover.body = this._selectedAssociatedUnitIDs;
       remover.generateRequest();
-      this._fireLog('_removeUnits', this.selectedAssociatedUnitIDs);
+      this._fireLog('_removeUnits', this._selectedAssociatedUnitIDs);
     },
 
     _handleRemovedAssociatedUnits: function (results) {
       this._fireLog('_handleRemovedAssociatedUnits called with:', results);
       if (this._requestSucceeded(results)) {
-        this._fireLogFire('display-message', 'Done! Unit' + (this.selectedAssociatedUnitIDs.length > 1 ? 's' : '') + ' removed.');
+        this._fireLogFire('display-message', 'Units removed.');
       } else {
-        this._fireLogFire('display-error', 'Failed to remove units!');
+        this._fireLogFire('display-error', 'Failed to remove units.');
       }
       this._getAssociatedUnits();
     },
 
     _unassociatedUnitsSelectionChanged: function (evt) {
       if (evt && _.isArray(evt.detail)) {
-        this.selectedUnassociatedUnitIDs = evt.detail;
+        this._selectedUnassociatedUnitIDs = evt.detail;
       }
     },
 
     _addUnits: function () {
       var adder = this.$.addUnitsRequest;
-      adder.body = this.selectedUnassociatedUnitIDs;
+      adder.body = this._selectedUnassociatedUnitIDs;
       adder.generateRequest();
-      this._fireLog('_addUnits', this.selectedUnassociatedUnitIDs);
+      this._fireLog('_addUnits', this._selectedUnassociatedUnitIDs);
       this._closeAddUnits();
     },
 
     _handleAddedUnassociatedUnits: function (results) {
       this._fireLog('_handleAddedUnassociatedUnits called with', results);
       if (this._requestSucceeded(results)) {
-        this._fireLogFire('orchestrator-display-message', 'Done! Unit' + (this.selectedUnassociatedUnitIDs.length > 1 ? 's' : '') + ' added.');
+        this._fireLogFire('display-message', 'Units added.');
       } else {
-        this._fireLog('_handleAddedUnassociatedUnits error:', err);
-        this._fireLogFire('orchestrator-display-error', 'Failed to add units!');
+        this._fireLogFire('display-error', 'Failed to add units.');
       }
       this._getAssociatedUnits();
     },
 
-    _requestSucceeded: function (results) {
-      return results && results.detail && results.detail.succeeded;
+    _requestSucceeded: function (results, withResult) {
+      var succeeded = results && results.detail && results.detail.succeeded;
+      if (withResult) {
+        return succeeded && results.detail.response && results.detail.response.result;
+      } else {
+        return succeeded;
+      }
     }
   });
 
