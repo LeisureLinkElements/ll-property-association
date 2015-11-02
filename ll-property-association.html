@@ -104,12 +104,11 @@ UI for adding and removing property relations, configurable for any source, such
     </div>
     <hr>
 
-    <template is="dom-if" if="{{!_noAssociatedUnits}}" restamp="true">
+    <template is="dom-if" if="{{!_noAssociatedUnits}}">
       <ll-table id="associatedUnitsTable" item-selector-type="checkbox"
                 fire-log-name="Associated Units Table" fire-log="true"
                 fire-log-event-prefix="associated-units-table-"></ll-table>
-    </template>
-    <template is="dom-if" if="{{_noAssociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties are
+    </templat"true"><p class="noUnitsMessage">No properties are
       associated with this <span>[[relationSourceSingular]]</span>.<a on-click="_goAddUnits">Add one now &gt;</a></p>
     </template>
 
@@ -131,13 +130,13 @@ UI for adding and removing property relations, configurable for any source, such
           </div>
         </div>
 
-        <template is="dom-if" if="{{!_noUnassociatedUnits}}" restamp="true">
+        <template is="dom-if" if="{{!_noUnassociatedUnits}}">
           <ll-table id="unassociatedUnitsTable" item-selector-type="checkbox"
                     fire-log-name="Unassociated Units Table" fire-log="true"
                     fire-log-event-prefix="unassociated-units-table-">
           </ll-table>
         </template>
-        <template is="dom-if" if="{{_noUnassociatedUnits}}" restamp="true"><p class="noUnitsMessage">No properties to
+        <template is="dom-if" if="{{_noUnassociatedUnits}}"><p class="noUnitsMessage">No properties to
           associate.</p></template>
 
       </div>
