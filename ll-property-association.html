@@ -108,7 +108,8 @@ UI for adding and removing property relations, configurable for any source, such
       <ll-table id="associatedUnitsTable" item-selector-type="checkbox"
                 fire-log-name="Associated Units Table" fire-log="true"
                 fire-log-event-prefix="associated-units-table-"></ll-table>
-    </templat"true"><p class="noUnitsMessage">No properties are
+    </template>
+    <template is="dom-if" if="{{_noAssociatedUnits}}"><p class="noUnitsMessage">No properties are
       associated with this <span>[[relationSourceSingular]]</span>.<a on-click="_goAddUnits">Add one now &gt;</a></p>
     </template>
 
