@@ -74,6 +74,12 @@ UI for adding and removing property relations, configurable for any source, such
       margin: 15px 0 0;
     }
 
+    .temporaryfix {
+      max-height: 400px;
+      overflow-x: hidden;
+      overflow-y: scroll;
+    }
+
   </style>
 
   <template>
@@ -117,7 +123,7 @@ UI for adding and removing property relations, configurable for any source, such
 
       <h2>Associate this <span>[[_relationSourceSingularCapitalized]]</span> with more Properties</h2>
 
-      <div style="max-height: 400px; overflow-x: hidden; overflow-y: scroll;">
+      <div class="temporaryfix">
 
         <div class="row">
           <div class="col-md-5">
