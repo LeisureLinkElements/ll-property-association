@@ -336,7 +336,7 @@ UI for adding and removing property relations, configurable for any source, such
     _removeUnits: function () {
       var remover = this.$.removeUnitsRequest;
       if (this._selectedAssociatedUnitIDs) {
-        remover.queryString = 'unitId=' + this._selectedAssociatedUnitIDs[0]; //we had to remove the array from the body, since we are only removing one at a time, lets just grab the first element
+        remover.params.unitIds = this._selectedAssociatedUnitIDs; //we had to remove the array from the body
       }
       remover.generateRequest();
       this._fireLog('_removeUnits', this._selectedAssociatedUnitIDs);
