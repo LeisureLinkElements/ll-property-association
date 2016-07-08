@@ -86,14 +86,20 @@ UI for adding and removing property relations, configurable for any source, such
 
     <iron-ajax id="getAssociatedUnitsRequest" url="{{_unitsRequestUrl}}" params='{"areAssoc":"true", "nameQuery":""}'
                handle-as="json"
-               on-response="_handleGotAssociatedUnits"></iron-ajax>
+               on-response="_handleGotAssociatedUnits"
+               on-error="_handleErrorResponse"></iron-ajax>
     <iron-ajax id="getUnassociatedUnitsRequest" url="{{_unitsRequestUrl}}" params='{"areAssoc":"false", "nameQuery":""}'
                handle-as="json"
-               on-response="_handleGotUnassociatedUnits"></iron-ajax>
+               on-response="_handleGotUnassociatedUnits"
+               on-error="_handleErrorResponse"></iron-ajax>
     <iron-ajax id="addUnitsRequest" url="{{_unitsRequestUrl}}" method="POST" content-type="application/json"
-               handle-as="json" on-response="_handleAddedUnassociatedUnits"></iron-ajax>
+               handle-as="json"
+               on-response="_handleAddedUnassociatedUnits"
+               on-error="_handleErrorResponse"></iron-ajax>
     <iron-ajax id="removeUnitsRequest" url="{{_unitsRequestUrl}}" method="DELETE" content-type="application/json"
-               handle-as="json" on-response="_handleRemovedAssociatedUnits" on-error="_handleError"></iron-ajax>
+               handle-as="json"
+               on-response="_handleRemovedAssociatedUnits"
+               on-error="_handleErrorResponse"></iron-ajax>
 
     <div>
       <div class="row">
@@ -344,7 +350,7 @@ UI for adding and removing property relations, configurable for any source, such
       this._getAssociatedUnits();
     },
 
-    _handleError: function(event) {
+    _handleErrorResponse: function(event) {
       this._fireLogFire('error', event);
     },
 
