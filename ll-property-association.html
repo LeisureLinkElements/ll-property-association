@@ -93,7 +93,7 @@ UI for adding and removing property relations, configurable for any source, such
     <iron-ajax id="addUnitsRequest" url="{{_unitsRequestUrl}}" method="POST" content-type="application/json"
                handle-as="json" on-response="_handleAddedUnassociatedUnits"></iron-ajax>
     <iron-ajax id="removeUnitsRequest" url="{{_unitsRequestUrl}}" method="DELETE" content-type="application/json"
-               handle-as="json" on-response="_handleRemovedAssociatedUnits"></iron-ajax>
+               handle-as="json" on-response="_handleRemovedAssociatedUnits" on-error="_handleError"></iron-ajax>
 
     <div>
       <div class="row">
@@ -342,6 +342,10 @@ UI for adding and removing property relations, configurable for any source, such
         this._fireLogFire('display-error', 'Failed to remove units.');
       }
       this._getAssociatedUnits();
+    },
+
+    _handleError: function(event) {
+      this._fireLogFire('error', event);
     },
 
     _unassociatedUnitsSelectionChanged: function (evt) {
