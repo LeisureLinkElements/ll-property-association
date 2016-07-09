@@ -338,6 +338,7 @@ UI for adding and removing property relations, configurable for any source, such
       if (this._selectedAssociatedUnitIDs) {
         remover.params.unitIds = this._selectedAssociatedUnitIDs; //we had to remove the array from the body
       }
+      remover.body = undefined;
       remover.generateRequest();
       this._fireLog('_removeUnits', this._selectedAssociatedUnitIDs);
     },
